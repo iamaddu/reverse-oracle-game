@@ -6,14 +6,14 @@
     <title>Reverse Oracle Game</title>
     <style>
         :root {
-            --primary: #1cb3c8;           /* Teal from logo */
-            --primary-light: #4fd1d9;     /* Lighter teal */
-            --primary-dark: #0e5e6f;      /* Dark teal/blue */
-            --secondary: #e0f7fa;         /* Very light teal */
-            --bg-gradient-start: #0e5e6f; /* Dark teal/blue */
-            --bg-gradient-end: #181c1f;   /* Blackish background */
-            --text-dark: #181c1f;         /* Use dark text for light backgrounds */
-            --text-light: #f8fafc;        /* Use light text for dark backgrounds */
+            --primary: #1cb3c8;
+            --primary-light: #4fd1d9;
+            --primary-dark: #0e5e6f;
+            --secondary: #e0f7fa;
+            --bg-gradient-start: #0e5e6f;
+            --bg-gradient-end: #181c1f;
+            --text-dark: #181c1f;
+            --text-light: #f8fafc;
             --shadow-sm: 0 1px 2px rgba(28,179,200,0.08);
             --shadow-md: 0 4px 6px rgba(28,179,200,0.12);
             --shadow-lg: 0 10px 15px rgba(28,179,200,0.15);
@@ -285,8 +285,6 @@
     </style>
 </head>
 <body>
-    <!-- RUDRA Logo at the top -->
-    <img src="rvu-logo.jpg" alt="RUDRA Logo" style="display:block; margin:2rem auto 1rem auto; width:130px; max-width:40vw; border-radius:16px; background:#181c1f; box-shadow:0 4px 16px rgba(28,179,200,0.18);">
     <div id="game-container">
         <h1>Reverse Oracle Game</h1>
         <div id="instructions">
@@ -295,7 +293,7 @@
         <div id="game-area">
             <div id="question-log"></div>
             <div class="input-group">
-                <input type="text" id="question-input" placeholder="Ask a yes/no question..." autocomplete="off">
+                <input type="text" id="question-input" placeholder="Ask a yes/no question..." autocomplete="off" maxlength="80">
                 <div class="button-group">
                     <button id="submit-btn" class="btn">Submit Question</button>
                     <button id="guess-btn" class="btn btn-secondary">Make a Guess</button>
@@ -310,39 +308,35 @@
     </div>
 
     <script>
-        // Game characters
+        // Game characters with detailed metadata
         const characters = [
-            // Indian Scientists & Thinkers
-            { name: "C. V. Raman", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: true },
-            { name: "Homi J. Bhabha", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
-            { name: "Vikram Sarabhai", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
-            { name: "A. P. J. Abdul Kalam", type: "scientist", gender: "male", field: "aerospace", birthplace: "India", nobel: false },
-            { name: "Satyendra Nath Bose", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
-            { name: "Jagadish Chandra Bose", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
-            { name: "Srinivasa Ramanujan", type: "scientist", gender: "male", field: "mathematics", birthplace: "India", nobel: false },
-            { name: "Prafulla Chandra Ray", type: "scientist", gender: "male", field: "chemistry", birthplace: "India", nobel: false },
-            { name: "Meghnad Saha", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
-            { name: "G. N. Ramachandran", type: "scientist", gender: "male", field: "biophysics", birthplace: "India", nobel: false },
-            { name: "Kalpana Chawla", type: "scientist", gender: "female", field: "aerospace", birthplace: "India", nobel: false },
-            { name: "Rakesh Sharma", type: "scientist", gender: "male", field: "aerospace", birthplace: "India", nobel: false },
-            { name: "M. Visvesvaraya", type: "scientist", gender: "male", field: "engineering", birthplace: "India", nobel: false },
-            { name: "Subrahmanyan Chandrasekhar", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: true },
-            { name: "Venkatraman Ramakrishnan", type: "scientist", gender: "male", field: "chemistry", birthplace: "India", nobel: true },
+            // Indian Scientists
+            { name: "C. V. Raman", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: true, alive: false },
+            { name: "Homi J. Bhabha", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: false, alive: false },
+            { name: "Vikram Sarabhai", type: "scientist", gender: "male", field: "space", era: "20th century", nobel: false, alive: false },
+            { name: "A. P. J. Abdul Kalam", type: "scientist", gender: "male", field: "aerospace", era: "20th-21st century", nobel: false, alive: false },
+            { name: "Satyendra Nath Bose", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: false, alive: false },
+            { name: "Jagadish Chandra Bose", type: "scientist", gender: "male", field: "physics", era: "19th-20th century", nobel: false, alive: false },
+            { name: "Srinivasa Ramanujan", type: "scientist", gender: "male", field: "mathematics", era: "20th century", nobel: false, alive: false },
+            { name: "Meghnad Saha", type: "scientist", gender: "male", field: "astrophysics", era: "20th century", nobel: false, alive: false },
+            { name: "Subrahmanyan Chandrasekhar", type: "scientist", gender: "male", field: "astrophysics", era: "20th century", nobel: true, alive: false },
+            { name: "Venkatraman Ramakrishnan", type: "scientist", gender: "male", field: "chemistry", era: "21st century", nobel: true, alive: true },
+            { name: "Kalpana Chawla", type: "scientist", gender: "female", field: "aerospace", era: "20th-21st century", nobel: false, alive: false },
+            { name: "Asima Chatterjee", type: "scientist", gender: "female", field: "chemistry", era: "20th century", nobel: false, alive: false },
+            
             // Indian Historical Figures
-            { name: "Mahatma Gandhi", type: "historical", gender: "male", field: "politics", birthplace: "India", nobel: false },
-            { name: "Sardar Vallabhbhai Patel", type: "historical", gender: "male", field: "politics", birthplace: "India", nobel: false },
-            { name: "Jawaharlal Nehru", type: "historical", gender: "male" },
-            { name: "Bhagat Singh", type: "historical", gender: "male" },
-            { name: "Rani Lakshmibai", type: "historical", gender: "female" },
-            { name: "Subhas Chandra Bose", type: "historical", gender: "male" },
-            { name: "Swami Vivekananda", type: "historical", gender: "male" },
-            { name: "Rabindranath Tagore", type: "historical", gender: "male" },
-            { name: "Chhatrapati Shivaji Maharaj", type: "historical", gender: "male" },
-            { name: "Tipu Sultan", type: "historical", gender: "male" },
-            { name: "Dr. B. R. Ambedkar", type: "historical", gender: "male" },
-            { name: "Raja Ram Mohan Roy", type: "historical", gender: "male" },
-            { name: "Sarojini Naidu", type: "historical", gender: "female" },
-            { name: "Mangal Pandey", type: "historical", gender: "male" }
+            { name: "Mahatma Gandhi", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
+            { name: "Jawaharlal Nehru", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
+            { name: "Sardar Vallabhbhai Patel", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
+            { name: "Bhagat Singh", type: "historical", gender: "male", field: "revolutionary", era: "20th century", nobel: false, alive: false },
+            { name: "Rani Lakshmibai", type: "historical", gender: "female", field: "royalty", era: "19th century", nobel: false, alive: false },
+            { name: "Subhas Chandra Bose", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
+            { name: "Rabindranath Tagore", type: "historical", gender: "male", field: "literature", era: "19th-20th century", nobel: true, alive: false },
+            { name: "Swami Vivekananda", type: "historical", gender: "male", field: "spirituality", era: "19th century", nobel: false, alive: false },
+            { name: "Chhatrapati Shivaji Maharaj", type: "historical", gender: "male", field: "royalty", era: "17th century", nobel: false, alive: false },
+            { name: "Tipu Sultan", type: "historical", gender: "male", field: "royalty", era: "18th century", nobel: false, alive: false },
+            { name: "Dr. B. R. Ambedkar", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
+            { name: "Sarojini Naidu", type: "historical", gender: "female", field: "politics", era: "20th century", nobel: false, alive: false }
         ];
 
         // DOM elements
@@ -360,22 +354,22 @@
 
         // Game state
         let gameState = {
-            answer: "",
-            answerType: "",
+            answer: null,
             questionsLeft: 10,
             gameOver: false,
-            loading: false
+            loading: false,
+            questionsAsked: []
         };
 
         // Initialize game
         function initGame() {
             const chosen = characters[Math.floor(Math.random() * characters.length)];
             gameState = {
-                answer: chosen.name,
-                answerType: chosen.type,
+                answer: chosen,
                 questionsLeft: 10,
                 gameOver: false,
-                loading: false
+                loading: false,
+                questionsAsked: []
             };
             
             elements.questionLog.innerHTML = '';
@@ -387,25 +381,25 @@
             elements.questionInput.value = '';
             elements.questionInput.focus();
             
-            addMessage('ai', "I'm thinking of a famous scientist or historical figure. Ask me yes/no questions to guess who it is!");
+            addMessage('ai', `I'm thinking of a famous ${chosen.type} figure. Ask me yes/no questions to guess who it is!`);
         }
 
-        // Escape HTML to prevent XSS
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"`]/g, function(tag) {
-                const chars = {
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;', '`': '&#96;'
-                };
-                return chars[tag] || tag;
-            });
+        // Sanitize input to prevent XSS
+        function sanitizeInput(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
         }
 
-        // Add message to chat (sanitized)
+        // Add message to chat
         function addMessage(sender, text) {
             const msgDiv = document.createElement('div');
             msgDiv.className = sender === 'player' ? 'msg-player' : 'msg-ai';
-            const prefix = sender === 'player' ? 'You: ' : text.startsWith('Correct!') || text.startsWith("No,") ? '' : 'AI: ';
-            msgDiv.innerHTML = escapeHTML(prefix + text);
+            
+            const prefix = sender === 'player' ? 'You: ' : 
+                          text.startsWith('Correct!') || text.startsWith("No,") ? '' : 'AI: ';
+            msgDiv.innerHTML = sanitizeInput(prefix + text);
+            
             elements.questionLog.appendChild(msgDiv);
             elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
         }
@@ -430,13 +424,14 @@
             if (spinner) spinner.remove();
         }
 
-        // Prevent double submissions
+        // Debounce to prevent rapid submissions
         let lastSubmissionTime = 0;
+        const DEBOUNCE_TIME = 500;
+
         // Handle question submission
         async function handleQuestion() {
-            if (gameState.gameOver || gameState.loading) return;
             const now = Date.now();
-            if (now - lastSubmissionTime < 500) return; // 0.5s debounce
+            if (gameState.gameOver || gameState.loading || now - lastSubmissionTime < DEBOUNCE_TIME) return;
             lastSubmissionTime = now;
             
             const userInput = elements.questionInput.value.trim();
@@ -444,25 +439,27 @@
                 elements.questionInput.focus();
                 return;
             }
-            // Only allow reasonable length
-            if (userInput.length > 80) {
-                addMessage('ai', "Question too long. Please keep it under 80 characters.");
+            
+            // Prevent duplicate questions
+            if (gameState.questionsAsked.some(q => q.toLowerCase() === userInput.toLowerCase())) {
+                addMessage('ai', "You already asked that question. Try a different one.");
                 return;
             }
             
-            // Add user question to log
+            // Track asked questions
+            gameState.questionsAsked.push(userInput);
+            
             addMessage('player', userInput);
             elements.questionInput.value = '';
             gameState.questionsLeft--;
             elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
 
             // Check if user guessed directly in the question
-            if (userInput.toLowerCase() === gameState.answer.toLowerCase()) {
+            if (userInput.toLowerCase().includes(gameState.answer.name.toLowerCase())) {
                 handleCorrectGuess();
                 return;
             }
 
-            // Process question
             showLoading();
             try {
                 const response = await getAIResponse(userInput);
@@ -485,13 +482,16 @@
             
             const guess = prompt("Who do you think it is?");
             if (!guess) return;
+            
+            // Basic validation
             if (guess.length > 80) {
                 addMessage('ai', "Guess too long. Please keep it under 80 characters.");
                 return;
             }
+            
             addMessage('player', `My guess: ${guess}`);
             
-            if (guess.toLowerCase() === gameState.answer.toLowerCase()) {
+            if (guess.toLowerCase() === gameState.answer.name.toLowerCase()) {
                 handleCorrectGuess();
             } else {
                 addMessage('ai', "No, that's not correct!");
@@ -506,7 +506,7 @@
 
         // Handle correct guess
         function handleCorrectGuess() {
-            addMessage('ai', `Correct! The answer was ${gameState.answer}.`);
+            addMessage('ai', `Correct! The answer was ${gameState.answer.name}.`);
             createConfetti();
             endGame(true);
         }
@@ -519,15 +519,15 @@
             elements.guessBtn.disabled = true;
             
             elements.resultText.textContent = won 
-                ? `🎉 You Win! It was ${gameState.answer}.` 
-                : `Game Over! The answer was ${gameState.answer}.`;
+                ? `🎉 You Win! It was ${gameState.answer.name}.` 
+                : `Game Over! The answer was ${gameState.answer.name}.`;
                 
             elements.resultArea.style.display = 'flex';
         }
 
         // Create confetti effect
         function createConfetti() {
-            const colors = ['#2563eb', '#3b82f6', '#1d4ed8', '#60a5fa', '#93c5fd'];
+            const colors = ['#1cb3c8', '#4fd1d9', '#0e5e6f', '#93c5fd', '#60a5fa'];
             
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
@@ -539,15 +539,13 @@
                 confetti.style.height = confetti.style.width;
                 confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
                 
-                document.getElementById('game-container').appendChild(confetti);
+                elements.gameContainer.appendChild(confetti);
                 
-                // Remove confetti after animation
                 setTimeout(() => {
                     confetti.remove();
                 }, 5000);
             }
             
-            // Add fall animation
             const style = document.createElement('style');
             style.innerHTML = `
                 @keyframes fall {
@@ -560,47 +558,84 @@
             document.head.appendChild(style);
         }
 
-        // Gemini API security note:
-        // DO NOT put your Gemini API key in frontend code. Use a backend server to proxy requests securely.
-        // Example: fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, answer }) })
-
-        // Updated getAIResponse to call backend and provide type
+        // Enhanced AI response system with rule-based answers
         async function getAIResponse(question) {
-            try {
-                // Find the chosen character's gender
-                const chosen = characters.find(c => c.name === gameState.answer);
-                const gender = chosen ? chosen.gender : "unknown";
-                const response = await fetch('/api/gemini', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, answer: gameState.answer, type: gameState.answerType, gender })
-                });
-                const data = await response.json();
-                if (data.answer) return data.answer;
-                return 'Sorry, no response.';
-            } catch (err) {
-                return 'Sorry, I encountered an error.';
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+            
+            const q = question.toLowerCase();
+            const answer = gameState.answer;
+            
+            // Check for common question patterns
+            if (q.includes('alive') || q.includes('dead') || q.includes('die') || q.includes('living')) {
+                return answer.alive ? "Yes, this person is alive." : "No, this person is no longer alive.";
             }
+            
+            if (q.includes('male') || q.includes('female') || q.includes('woman') || q.includes('man') || q.includes('gender')) {
+                return answer.gender === 'male' ? "This is a male figure." : "This is a female figure.";
+            }
+            
+            if (q.includes('scientist') || q.includes('science')) {
+                return answer.type === 'scientist' ? "Yes, this is a scientist." : "No, this is a historical figure.";
+            }
+            
+            if (q.includes('nobel') || q.includes('prize')) {
+                return answer.nobel ? "Yes, this person won a Nobel Prize." : "No, this person did not win a Nobel Prize.";
+            }
+            
+            if (q.includes('century') || q.includes('era') || q.includes('time period')) {
+                return `This person was active in the ${answer.era}.`;
+            }
+            
+            if (q.includes('physics') || q.includes('physicist')) {
+                return answer.field === 'physics' ? "Yes, this person worked in physics." : "No, this person did not work in physics.";
+            }
+            
+            if (q.includes('space') || q.includes('astronaut') || q.includes('rocket')) {
+                return answer.field === 'space' || answer.field === 'aerospace' ? 
+                    "Yes, this person worked in space/aerospace fields." : 
+                    "No, this person did not work in space/aerospace fields.";
+            }
+            
+            if (q.includes('india') || q.includes('indian')) {
+                return "Yes, this person is from India.";
+            }
+            
+            if (q.includes('politic') || q.includes('leader') || q.includes('prime minister') || q.includes('president')) {
+                return answer.field === 'politics' ? "Yes, this person was involved in politics." : "No, this person was not primarily a political figure.";
+            }
+            
+            // Fallback responses
+            const responses = [
+                "Yes.",
+                "No.",
+                "That's correct.",
+                "That's not correct.",
+                "I can't answer that definitively.",
+                "Please ask a different question.",
+                "Focus on yes/no questions about this person's identity."
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
         }
 
-        // Event listeners
-        elements.submitBtn.addEventListener('click', handleQuestion);
-        elements.guessBtn.addEventListener('click', handleGuess);
-        elements.playAgainBtn.addEventListener('click', initGame);
-        
-        elements.questionInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleQuestion();
-            }
-        });
+        // Event listeners with proper cleanup
+        function setupEventListeners() {
+            elements.submitBtn.addEventListener('click', handleQuestion);
+            elements.guessBtn.addEventListener('click', handleGuess);
+            elements.playAgainBtn.addEventListener('click', initGame);
+            
+            elements.questionInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handleQuestion();
+                }
+            });
+        }
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
             initGame();
-            
-            // Service worker registration removed for Vercel compatibility
         });
     </script>
-    <!-- Trigger redeploy: trivial comment for Vercel -->
 </body>
 </html>
