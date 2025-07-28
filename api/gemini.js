@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   }
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
   try {
-    const prompt = `You are the Reverse Oracle for a guessing game. The answer is: ${answer}. Type: ${req.body.type}. Only reply YES or NO to yes/no questions. If the question is not yes/no, reply: 'Please ask a yes/no question!' Never reveal the answer directly. If you cannot answer, reply: 'I cannot answer that.' Add a short, fun fact or witty comment after your answer. Never say 'maybe'.`;
+    const prompt = `You are the Reverse Oracle for a guessing game. The answer is: ${answer}. Type: ${req.body.type}. Reply ONLY with YES or NO to yes/no questions. Do NOT say anything else. If the question is not yes/no, reply: 'Please ask a yes/no question!' Never reveal the answer directly. If you cannot answer, reply: 'I cannot answer that.' Do NOT give hints, facts, or explanations unless asked specifically. Never say 'maybe'.`;
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
