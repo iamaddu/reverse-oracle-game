@@ -90,43 +90,47 @@ const chosen = characterList.find(c => c.name.toLowerCase() === answer.toLowerCa
 
   // Guarantee correct answers for type/gender/fact/personal life questions
   const q = question.toLowerCase();
-  if (q.includes('scientist')) {
-    return res.status(200).json({ answer: chosen && chosen.type === 'scientist' ? 'Yes.' : 'No.' });
+  // Robust type/gender/field matching (handle typos/plurals)
+  const typeMap = {
+    scientist: ["scientist", "scientists", "sciencetist", "sciencetists"],
+    historical: ["historical", "historian", "historicals", "history"],
+  };
+  const genderMap = {
+    female: ["female", "females", "woman", "women", "girl", "girls"],
+    male: ["male", "males", "man", "men", "boy", "boys"],
+  };
+  const fieldMap = {
+    physics: ["physics", "physicist", "physicists", "physicts", "physicst"],
+    chemistry: ["chemistry", "chemist", "chemists"],
+    mathematics: ["mathematics", "mathematician", "mathematicians", "maths", "math"],
+    biophysics: ["biophysics", "biophysicist", "biophysicists"],
+    engineering: ["engineering", "engineer", "engineers"],
+    aerospace: ["aerospace", "aerospace engineer", "aerospace engineers", "astronaut", "astronauts"],
+    politics: ["politics", "politician", "politicians"],
+  };
+  for (const t in typeMap) {
+    if (typeMap[t].some(word => q.includes(word))) {
+      return res.status(200).json({ answer: chosen && chosen.type === t ? 'Yes.' : 'No.' });
+    }
   }
-  if (q.includes('historical')) {
-    return res.status(200).json({ answer: chosen && chosen.type === 'historical' ? 'Yes.' : 'No.' });
+  for (const g in genderMap) {
+    if (genderMap[g].some(word => q.includes(word))) {
+      return res.status(200).json({ answer: chosen && chosen.gender === g ? 'Yes.' : 'No.' });
+    }
   }
-  if (q.includes('female')) {
-    return res.status(200).json({ answer: chosen && chosen.gender === 'female' ? 'Yes.' : 'No.' });
-  }
-  if (q.includes('male')) {
-    return res.status(200).json({ answer: chosen && chosen.gender === 'male' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('physics')) {
-    return res.status(200).json({ answer: chosen.field === 'physics' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('chemistry')) {
-    return res.status(200).json({ answer: chosen.field === 'chemistry' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('mathematics')) {
-    return res.status(200).json({ answer: chosen.field === 'mathematics' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('biophysics')) {
-    return res.status(200).json({ answer: chosen.field === 'biophysics' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('engineering')) {
-    return res.status(200).json({ answer: chosen.field === 'engineering' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('aerospace')) {
-    return res.status(200).json({ answer: chosen.field === 'aerospace' ? 'Yes.' : 'No.' });
-  }
-  if (chosen && q.includes('politics')) {
-    return res.status(200).json({ answer: chosen.field === 'politics' ? 'Yes.' : 'No.' });
+  for (const f in fieldMap) {
+    if (fieldMap[f].some(word => q.includes(word))) {
+      return res.status(200).json({ answer: chosen && chosen.field === f ? 'Yes.' : 'No.' });
+    }
   }
   if (chosen && q.includes('india')) {
     return res.status(200).json({ answer: chosen.birthplace === 'India' ? 'Yes.' : 'No.' });
   }
-  if (chosen && (q.includes('nobel') || q.includes('prize'))) {
+  // Robust Nobel Prize detection (handle typos and phrasings)
+  const nobelPatterns = [
+    'nobel', 'noble', 'nobel prize', 'noble prize', 'won nobel', 'win nobel', 'won noble', 'win noble', 'nobel laureate', 'noble laureate', 'got nobel', 'get nobel', 'got noble', 'get noble', 'nobel award', 'noble award'
+  ];
+  if (chosen && nobelPatterns.some(p => q.includes(p))) {
     return res.status(200).json({ answer: chosen.nobel ? 'Yes.' : 'No.' });
   }
   if (chosen && (q.includes('freedom fighter') || q.includes('freedom'))) {
