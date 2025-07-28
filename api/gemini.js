@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   }
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
   try {
-    const prompt = `You are the Reverse Oracle for a guessing game. The answer is: ${answer}. Type: ${req.body.type}. Reply ONLY with YES or NO to yes/no questions. Do NOT say anything else. If the question is not yes/no, reply: 'Please ask a yes/no question!' Never reveal the answer directly. If you cannot answer, reply: 'I cannot answer that.' Do NOT give hints, facts, or explanations unless asked specifically. Never say 'maybe'.`;
+    const prompt = `You are the Reverse Oracle for a fun guessing game. The answer is: ${answer}. The type is: ${req.body.type}. Only reply YES or NO to questions that can be answered that way.\n\nIMPORTANT: If asked 'Are you a scientist?' reply YES only if type is 'scientist', NO if 'historical'. If asked 'Are you a historical figure?' reply YES only if type is 'historical', NO if 'scientist'.\n\nIf asked about gender (male/female), answer based on the real gender of the answer. If you do not know, reply 'I cannot answer that.'\n\nWhen providing a fact or witty comment, make sure it is accurate and directly related to the answer. Do not make up information.\n\nIf the question is not yes/no (for example, 'hint'), reply: 'Please ask a yes/no question!' Never reveal the answer directly. If the question is truly unanswerable, reply: 'I cannot answer that.' After your answer, add a short, witty explanation or fun fact about the answer, but never say 'maybe'. Make it awesome!`;
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
