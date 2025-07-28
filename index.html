@@ -308,13 +308,37 @@
     <script>
         // Game characters
         const characters = [
-            "Albert Einstein", "Marie Curie", "Isaac Newton", "Galileo Galilei",
-            "Charles Darwin", "Alan Turing", "Nikola Tesla", "Stephen Hawking",
-            "Rosalind Franklin", "Ada Lovelace", "Katherine Johnson", "Carl Sagan",
-            "Richard Feynman", "Jane Goodall", "Dmitri Mendeleev", "James Clerk Maxwell",
-            "Leonardo da Vinci", "Thomas Edison", "Alexander Graham Bell", "Marie Curie",
-            "Grace Hopper", "Niels Bohr", "Louis Pasteur", "Archimedes",
-            "Pythagoras", "Aristotle", "Neil Armstrong", "Buzz Aldrin"
+            // Indian Scientists & Thinkers
+            { name: "C. V. Raman", type: "scientist" },
+            { name: "Homi J. Bhabha", type: "scientist" },
+            { name: "Vikram Sarabhai", type: "scientist" },
+            { name: "A. P. J. Abdul Kalam", type: "scientist" },
+            { name: "Satyendra Nath Bose", type: "scientist" },
+            { name: "Jagadish Chandra Bose", type: "scientist" },
+            { name: "Srinivasa Ramanujan", type: "scientist" },
+            { name: "Prafulla Chandra Ray", type: "scientist" },
+            { name: "Meghnad Saha", type: "scientist" },
+            { name: "G. N. Ramachandran", type: "scientist" },
+            { name: "Kalpana Chawla", type: "scientist" },
+            { name: "Rakesh Sharma", type: "scientist" },
+            { name: "M. Visvesvaraya", type: "scientist" },
+            { name: "Subrahmanyan Chandrasekhar", type: "scientist" },
+            { name: "Venkatraman Ramakrishnan", type: "scientist" },
+            // Indian Historical Figures
+            { name: "Mahatma Gandhi", type: "historical" },
+            { name: "Sardar Vallabhbhai Patel", type: "historical" },
+            { name: "Jawaharlal Nehru", type: "historical" },
+            { name: "Bhagat Singh", type: "historical" },
+            { name: "Rani Lakshmibai", type: "historical" },
+            { name: "Subhas Chandra Bose", type: "historical" },
+            { name: "Swami Vivekananda", type: "historical" },
+            { name: "Rabindranath Tagore", type: "historical" },
+            { name: "Chhatrapati Shivaji Maharaj", type: "historical" },
+            { name: "Tipu Sultan", type: "historical" },
+            { name: "Dr. B. R. Ambedkar", type: "historical" },
+            { name: "Raja Ram Mohan Roy", type: "historical" },
+            { name: "Sarojini Naidu", type: "historical" },
+            { name: "Mangal Pandey", type: "historical" }
         ];
 
         // DOM elements
@@ -333,6 +357,7 @@
         // Game state
         let gameState = {
             answer: "",
+            answerType: "",
             questionsLeft: 10,
             gameOver: false,
             loading: false
@@ -340,8 +365,10 @@
 
         // Initialize game
         function initGame() {
+            const chosen = characters[Math.floor(Math.random() * characters.length)];
             gameState = {
-                answer: characters[Math.floor(Math.random() * characters.length)],
+                answer: chosen.name,
+                answerType: chosen.type,
                 questionsLeft: 10,
                 gameOver: false,
                 loading: false
@@ -533,13 +560,13 @@
         // DO NOT put your Gemini API key in frontend code. Use a backend server to proxy requests securely.
         // Example: fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, answer }) })
 
-        // Updated getAIResponse to call backend
+        // Updated getAIResponse to call backend and provide type
         async function getAIResponse(question) {
             try {
                 const response = await fetch('/api/gemini', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, answer: gameState.answer })
+                    body: JSON.stringify({ question, answer: gameState.answer, type: gameState.answerType })
                 });
                 const data = await response.json();
                 if (data.answer) return data.answer;
