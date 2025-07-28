@@ -41,6 +41,7 @@
   ],
   "routes": [
     { "src": "/api/gemini", "dest": "/api/gemini.js" },
+    { "src": "/(.*)\\.(jpg|jpeg|png|svg|gif|css|js)$", "dest": "/$1.$2" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
