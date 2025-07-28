@@ -563,10 +563,13 @@
         // Updated getAIResponse to call backend and provide type
         async function getAIResponse(question) {
             try {
+                // Find the chosen character's gender
+                const chosen = characters.find(c => c.name === gameState.answer);
+                const gender = chosen ? chosen.gender : "unknown";
                 const response = await fetch('/api/gemini', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ question, answer: gameState.answer, type: gameState.answerType })
+                    body: JSON.stringify({ question, answer: gameState.answer, type: gameState.answerType, gender })
                 });
                 const data = await response.json();
                 if (data.answer) return data.answer;
