@@ -42,12 +42,48 @@ module.exports = async (req, res) => {
   }
 const chosen = characterList.find(c => c.name.toLowerCase() === answer.toLowerCase());
 
-  // Guarantee correct answers for type/gender questions
+  // Guarantee correct answers for type/gender/fact questions
   const q = question.toLowerCase();
-  // Intercept known facts (type, gender, field, birthplace, nobel)
-  // ...existing code for intercepts...
-  // Find the chosen character's facts from the frontend list
-  // (Removed duplicate characterList declaration)
+  if (q.includes('scientist')) {
+    return res.status(200).json({ answer: chosen && chosen.type === 'scientist' ? 'Yes.' : 'No.' });
+  }
+  if (q.includes('historical')) {
+    return res.status(200).json({ answer: chosen && chosen.type === 'historical' ? 'Yes.' : 'No.' });
+  }
+  if (q.includes('female')) {
+    return res.status(200).json({ answer: chosen && chosen.gender === 'female' ? 'Yes.' : 'No.' });
+  }
+  if (q.includes('male')) {
+    return res.status(200).json({ answer: chosen && chosen.gender === 'male' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('physics')) {
+    return res.status(200).json({ answer: chosen.field === 'physics' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('chemistry')) {
+    return res.status(200).json({ answer: chosen.field === 'chemistry' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('mathematics')) {
+    return res.status(200).json({ answer: chosen.field === 'mathematics' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('biophysics')) {
+    return res.status(200).json({ answer: chosen.field === 'biophysics' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('engineering')) {
+    return res.status(200).json({ answer: chosen.field === 'engineering' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('aerospace')) {
+    return res.status(200).json({ answer: chosen.field === 'aerospace' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('politics')) {
+    return res.status(200).json({ answer: chosen.field === 'politics' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && q.includes('india')) {
+    return res.status(200).json({ answer: chosen.birthplace === 'India' ? 'Yes.' : 'No.' });
+  }
+  if (chosen && (q.includes('nobel') || q.includes('prize'))) {
+    return res.status(200).json({ answer: chosen.nobel ? 'Yes.' : 'No.' });
+  }
+  // If not intercepted, call Gemini
   try {
     // Build a summary of the chosen person for Gemini
     let summary = '';
