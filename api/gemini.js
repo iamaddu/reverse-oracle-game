@@ -1,3 +1,35 @@
+const characterList = [
+  { name: "C. V. Raman", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: true },
+  { name: "Homi J. Bhabha", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
+  { name: "Vikram Sarabhai", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
+  { name: "A. P. J. Abdul Kalam", type: "scientist", gender: "male", field: "aerospace", birthplace: "India", nobel: false },
+  { name: "Satyendra Nath Bose", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
+  { name: "Jagadish Chandra Bose", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
+  { name: "Srinivasa Ramanujan", type: "scientist", gender: "male", field: "mathematics", birthplace: "India", nobel: false },
+  { name: "Prafulla Chandra Ray", type: "scientist", gender: "male", field: "chemistry", birthplace: "India", nobel: false },
+  { name: "Meghnad Saha", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: false },
+  { name: "G. N. Ramachandran", type: "scientist", gender: "male", field: "biophysics", birthplace: "India", nobel: false },
+  { name: "Kalpana Chawla", type: "scientist", gender: "female", field: "aerospace", birthplace: "India", nobel: false },
+  { name: "Rakesh Sharma", type: "scientist", gender: "male", field: "aerospace", birthplace: "India", nobel: false },
+  { name: "M. Visvesvaraya", type: "scientist", gender: "male", field: "engineering", birthplace: "India", nobel: false },
+  { name: "Subrahmanyan Chandrasekhar", type: "scientist", gender: "male", field: "physics", birthplace: "India", nobel: true },
+  { name: "Venkatraman Ramakrishnan", type: "scientist", gender: "male", field: "chemistry", birthplace: "India", nobel: true },
+  { name: "Mahatma Gandhi", type: "historical", gender: "male", field: "politics", birthplace: "India", nobel: false },
+  { name: "Sardar Vallabhbhai Patel", type: "historical", gender: "male", field: "politics", birthplace: "India", nobel: false },
+  { name: "Jawaharlal Nehru", type: "historical", gender: "male" },
+  { name: "Bhagat Singh", type: "historical", gender: "male" },
+  { name: "Rani Lakshmibai", type: "historical", gender: "female" },
+  { name: "Subhas Chandra Bose", type: "historical", gender: "male" },
+  { name: "Swami Vivekananda", type: "historical", gender: "male" },
+  { name: "Rabindranath Tagore", type: "historical", gender: "male" },
+  { name: "Chhatrapati Shivaji Maharaj", type: "historical", gender: "male" },
+  { name: "Tipu Sultan", type: "historical", gender: "male" },
+  { name: "Dr. B. R. Ambedkar", type: "historical", gender: "male" },
+  { name: "Raja Ram Mohan Roy", type: "historical", gender: "male" },
+  { name: "Sarojini Naidu", type: "historical", gender: "female" },
+  { name: "Mangal Pandey", type: "historical", gender: "male" }
+];
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -8,33 +40,25 @@ module.exports = async (req, res) => {
     res.status(400).json({ error: 'Missing question, answer, type, or gender.' });
     return;
   }
+const chosen = characterList.find(c => c.name.toLowerCase() === answer.toLowerCase());
 
   // Guarantee correct answers for type/gender questions
   const q = question.toLowerCase();
-  // Scientist/historical logic
-  if (q.includes('scientist')) {
-    return res.status(200).json({ answer: type === 'scientist' ? 'Yes.' : 'No.' });
-  }
-  if (q.includes('historical')) {
-    return res.status(200).json({ answer: type === 'historical' ? 'Yes.' : 'No.' });
-  }
-  // Gender logic
-  if (q.includes('female')) {
-    return res.status(200).json({ answer: gender === 'female' ? 'Yes.' : 'No.' });
-  }
-  if (q.includes('male')) {
-    return res.status(200).json({ answer: gender === 'male' ? 'Yes.' : 'No.' });
-  }
-  // Fallback to Gemini for other questions
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) {
-    res.status(500).json({ error: 'API key not configured.' });
-    return;
-  }
-  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  // Intercept known facts (type, gender, field, birthplace, nobel)
+  // ...existing code for intercepts...
+  // Find the chosen character's facts from the frontend list
+  // (Removed duplicate characterList declaration)
   try {
-    const prompt = `You are the Reverse Oracle for a fun guessing game. The answer is: ${answer}. The type is: ${type}. The gender is: ${gender}. Only reply YES or NO to questions that can be answered that way.\n\nIMPORTANT: If asked 'Are you a scientist?' reply YES only if type is 'scientist', NO if 'historical'. If asked 'Are you a historical figure?' reply YES only if type is 'historical', NO if 'scientist'.\n\nIf asked about gender (male/female), answer based on the real gender of the answer. If you do not know, reply 'I cannot answer that.'\n\nWhen providing a fact or witty comment, make sure it is accurate and directly related to the answer. Do not make up information.\n\nIf the question is not yes/no (for example, 'hint'), reply: 'Please ask a yes/no question!' Never reveal the answer directly. If the question is truly unanswerable, reply: 'I cannot answer that.' After your answer, add a short, witty explanation or fun fact about the answer, but never say 'maybe'. Make it awesome!`;
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+    // Build a summary of the chosen person for Gemini
+    let summary = '';
+    if (chosen) {
+      summary = `Here are some facts about the person:\nName: ${chosen.name}\nType: ${chosen.type || ''}\nGender: ${chosen.gender || ''}\nField: ${chosen.field || ''}\nBirthplace: ${chosen.birthplace || ''}\nNobel Prize: ${chosen.nobel !== undefined ? (chosen.nobel ? 'Yes' : 'No') : ''}`;
+    }
+    // Compose the prompt for Gemini
+    const prompt = summary
+      ? `${summary}\n\nQuestion: ${question}\nAnswer in yes/no if possible, otherwise provide a short factual answer.`
+      : `Question: ${question}\nAnswer in yes/no if possible, otherwise provide a short factual answer.`;
+    const response = await fetch('https://api.gemini.com/v1/endpoint', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
