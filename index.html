@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse Oracle Game</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #e0e7ff;
+            --bg-gradient-start: #4f8cff;
+            --bg-gradient-end: #e0e7ff;
+            --text-dark: #1e293b;
+            --text-light: #f8fafc;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            color: var(--text-dark);
+            line-height: 1.5;
+            padding: 1rem;
+        }
+
+        #game-container {
+            background: #fff;
+            margin-top: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem 1.25rem;
+            width: 100%;
+            max-width: 28rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        #instructions {
+            color: var(--text-dark);
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            opacity: 0.9;
+            max-width: 90%;
+        }
+
+        #game-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #question-log {
+            background: #f8fafc;
+            border-radius: var(--radius-md);
+            width: 100%;
+            min-height: 12rem;
+            max-height: 20rem;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-sm) inset;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #f1f1f1;
+        }
+
+        #question-log::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #question-log::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: var(--radius-md);
+        }
+
+        #question-log::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: var(--radius-md);
+        }
+
+        .msg-player {
+            align-self: flex-end;
+            background: var(--primary);
+            color: var(--text-light);
+            border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);
+            padding: 0.75rem 1rem;
+            max-width: 85%;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: var(--shadow-sm);
+            word-break: break-word;
+        }
+
+        .msg-ai {
+            align-self: flex-start;
+            background: var(--secondary);
+            color: var(--text-dark);
+            border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+            padding: 0.75rem 1rem;
+            max-width: 85%;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: var(--shadow-sm);
+            word-break: break-word;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(0.5rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        #question-input {
+            padding: 0.75rem 1rem;
+            width: 100%;
+            border-radius: var(--radius-sm);
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        #question-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--text-light);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            flex: 1;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+        }
+
+        #remaining-questions {
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        #result-area {
+            margin-top: 1.5rem;
+            text-align: center;
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        #result-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        @media (max-width: 480px) {
+            #game-container {
+                padding: 1.5rem 1rem;
+                margin-top: 1rem;
+                border-radius: var(--radius-md);
+            }
+
+            #question-log {
+                min-height: 10rem;
+                max-height: 16rem;
+                padding: 0.75rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 3px solid var(--primary);
+            border-top: 3px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Reverse Oracle Game</h1>
+        <div id="instructions">
+            <p>Guess the famous scientist or historical figure by asking up to 10 yes/no questions!</p>
+        </div>
+        <div id="game-area">
+            <div id="question-log"></div>
+            <div class="input-group">
+                <input type="text" id="question-input" placeholder="Ask a yes/no question..." autocomplete="off">
+                <div class="button-group">
+                    <button id="submit-btn" class="btn">Submit Question</button>
+                    <button id="guess-btn" class="btn btn-secondary">Make a Guess</button>
+                </div>
+            </div>
+            <div id="remaining-questions">Questions remaining: 10</div>
+        </div>
+        <div id="result-area">
+            <h2 id="result-text"></h2>
+            <button id="play-again-btn" class="btn">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Game characters
+        const characters = [
+            "Albert Einstein", "Marie Curie", "Isaac Newton", "Galileo Galilei",
+            "Charles Darwin", "Alan Turing", "Nikola Tesla", "Stephen Hawking",
+            "Rosalind Franklin", "Ada Lovelace", "Katherine Johnson", "Carl Sagan",
+            "Richard Feynman", "Jane Goodall", "Dmitri Mendeleev", "James Clerk Maxwell",
+            "Leonardo da Vinci", "Thomas Edison", "Alexander Graham Bell", "Marie Curie",
+            "Grace Hopper", "Niels Bohr", "Louis Pasteur", "Archimedes",
+            "Pythagoras", "Aristotle", "Neil Armstrong", "Buzz Aldrin"
+        ];
+
+        // DOM elements
+        const elements = {
+            questionLog: document.getElementById('question-log'),
+            questionInput: document.getElementById('question-input'),
+            submitBtn: document.getElementById('submit-btn'),
+            guessBtn: document.getElementById('guess-btn'),
+            remainingQuestions: document.getElementById('remaining-questions'),
+            resultArea: document.getElementById('result-area'),
+            resultText: document.getElementById('result-text'),
+            playAgainBtn: document.getElementById('play-again-btn'),
+            gameContainer: document.getElementById('game-container')
+        };
+
+        // Game state
+        let gameState = {
+            answer: "",
+            questionsLeft: 10,
+            gameOver: false,
+            loading: false
+        };
+
+        // Initialize game
+        function initGame() {
+            gameState = {
+                answer: characters[Math.floor(Math.random() * characters.length)],
+                questionsLeft: 10,
+                gameOver: false,
+                loading: false
+            };
+            
+            elements.questionLog.innerHTML = '';
+            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
+            elements.resultArea.style.display = 'none';
+            elements.questionInput.disabled = false;
+            elements.submitBtn.disabled = false;
+            elements.guessBtn.disabled = false;
+            elements.questionInput.value = '';
+            elements.questionInput.focus();
+            
+            addMessage('ai', "I'm thinking of a famous scientist or historical figure. Ask me yes/no questions to guess who it is!");
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"`]/g, function(tag) {
+                const chars = {
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;', '`': '&#96;'
+                };
+                return chars[tag] || tag;
+            });
+        }
+
+        // Add message to chat (sanitized)
+        function addMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'player' ? 'msg-player' : 'msg-ai';
+            const prefix = sender === 'player' ? 'You: ' : text.startsWith('Correct!') || text.startsWith("No,") ? '' : 'AI: ';
+            msgDiv.innerHTML = escapeHTML(prefix + text);
+            elements.questionLog.appendChild(msgDiv);
+            elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
+        }
+
+        // Show loading indicator
+        function showLoading() {
+            if (gameState.loading) return;
+            gameState.loading = true;
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'msg-ai';
+            spinner.id = 'ai-loading';
+            spinner.innerHTML = '<span class="spinner"></span> Thinking...';
+            elements.questionLog.appendChild(spinner);
+            elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
+        }
+
+        // Hide loading indicator
+        function hideLoading() {
+            gameState.loading = false;
+            const spinner = document.getElementById('ai-loading');
+            if (spinner) spinner.remove();
+        }
+
+        // Prevent double submissions
+        let lastSubmissionTime = 0;
+        // Handle question submission
+        async function handleQuestion() {
+            if (gameState.gameOver || gameState.loading) return;
+            const now = Date.now();
+            if (now - lastSubmissionTime < 500) return; // 0.5s debounce
+            lastSubmissionTime = now;
+            
+            const userInput = elements.questionInput.value.trim();
+            if (!userInput) {
+                elements.questionInput.focus();
+                return;
+            }
+            // Only allow reasonable length
+            if (userInput.length > 80) {
+                addMessage('ai', "Question too long. Please keep it under 80 characters.");
+                return;
+            }
+            
+            // Add user question to log
+            addMessage('player', userInput);
+            elements.questionInput.value = '';
+            gameState.questionsLeft--;
+            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
+
+            // Check if user guessed directly in the question
+            if (userInput.toLowerCase() === gameState.answer.toLowerCase()) {
+                handleCorrectGuess();
+                return;
+            }
+
+            // Process question
+            showLoading();
+            try {
+                const response = await getAIResponse(userInput);
+                addMessage('ai', response);
+                
+                if (gameState.questionsLeft <= 0 && !gameState.gameOver) {
+                    endGame(false);
+                }
+            } catch (error) {
+                addMessage('ai', "Sorry, I encountered an error. Please try again.");
+                console.error("API Error:", error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Handle guess submission
+        function handleGuess() {
+            if (gameState.gameOver) return;
+            
+            const guess = prompt("Who do you think it is?");
+            if (!guess) return;
+            if (guess.length > 80) {
+                addMessage('ai', "Guess too long. Please keep it under 80 characters.");
+                return;
+            }
+            addMessage('player', `My guess: ${guess}`);
+            
+            if (guess.toLowerCase() === gameState.answer.toLowerCase()) {
+                handleCorrectGuess();
+            } else {
+                addMessage('ai', "No, that's not correct!");
+                gameState.questionsLeft--;
+                elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
+                
+                if (gameState.questionsLeft <= 0) {
+                    endGame(false);
+                }
+            }
+        }
+
+        // Handle correct guess
+        function handleCorrectGuess() {
+            addMessage('ai', `Correct! The answer was ${gameState.answer}.`);
+            createConfetti();
+            endGame(true);
+        }
+
+        // End game
+        function endGame(won) {
+            gameState.gameOver = true;
+            elements.questionInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            elements.guessBtn.disabled = true;
+            
+            elements.resultText.textContent = won 
+                ? `🎉 You Win! It was ${gameState.answer}.` 
+                : `Game Over! The answer was ${gameState.answer}.`;
+                
+            elements.resultArea.style.display = 'flex';
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#2563eb', '#3b82f6', '#1d4ed8', '#60a5fa', '#93c5fd'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                confetti.style.width = Math.random() * 8 + 4 + 'px';
+                confetti.style.height = confetti.style.width;
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                
+                document.getElementById('game-container').appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+            
+            // Add fall animation
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes fall {
+                    to {
+                        transform: translateY(100vh) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Gemini API security note:
+        // DO NOT put your Gemini API key in frontend code. Use a backend server to proxy requests securely.
+        // Example: fetch('/api/gemini', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question, answer }) })
+
+        // Updated getAIResponse to call backend
+        async function getAIResponse(question) {
+            try {
+                const response = await fetch('/api/gemini', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question, answer: gameState.answer })
+                });
+                const data = await response.json();
+                if (data.answer) return data.answer;
+                return 'Sorry, no response.';
+            } catch (err) {
+                return 'Sorry, I encountered an error.';
+            }
+        }
+
+        // Event listeners
+        elements.submitBtn.addEventListener('click', handleQuestion);
+        elements.guessBtn.addEventListener('click', handleGuess);
+        elements.playAgainBtn.addEventListener('click', initGame);
+        
+        elements.questionInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleQuestion();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            // Service worker registration for PWA
+            if (window.location.protocol === 'https:') {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js').catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
