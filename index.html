@@ -286,6 +286,7 @@
 </head>
 <body>
     <div id="game-container">
+        <img src="rvu-logo.jpg" alt="RVU Logo" id="rvu-logo" style="width: 80px; height: auto; display: block; margin: 0 auto 1rem auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(28,179,200,0.18); background: #fff;" />
         <h1>Reverse Oracle Game</h1>
         <div id="instructions">
             <p>Guess the famous scientist or historical figure by asking up to 10 yes/no questions!</p>
@@ -454,8 +455,21 @@
             gameState.questionsLeft--;
             elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
 
-            // Check if user guessed directly in the question
-            if (userInput.toLowerCase().includes(gameState.answer.name.toLowerCase())) {
+            // Check if user guessed directly or partially in the question
+            const answerName = gameState.answer.name.toLowerCase();
+            const userInputLower = userInput.toLowerCase();
+            // Direct match
+            if (userInputLower.includes(answerName)) {
+                handleCorrectGuess();
+                return;
+            }
+            // Partial name match (at least 2 words from the answer's name)
+            const answerParts = answerName.split(/\s+/).filter(w => w.length > 2);
+            let matchCount = 0;
+            for (const part of answerParts) {
+                if (userInputLower.includes(part)) matchCount++;
+            }
+            if (answerParts.length > 1 && matchCount >= 2) {
                 handleCorrectGuess();
                 return;
             }
@@ -566,56 +580,68 @@
             const q = question.toLowerCase();
             const answer = gameState.answer;
             
-            // Check for common question patterns
+            // Check for common and expanded question patterns
             if (q.includes('alive') || q.includes('dead') || q.includes('die') || q.includes('living')) {
                 return answer.alive ? "Yes, this person is alive." : "No, this person is no longer alive.";
             }
-            
             if (q.includes('male') || q.includes('female') || q.includes('woman') || q.includes('man') || q.includes('gender')) {
                 return answer.gender === 'male' ? "This is a male figure." : "This is a female figure.";
             }
-            
             if (q.includes('scientist') || q.includes('science')) {
                 return answer.type === 'scientist' ? "Yes, this is a scientist." : "No, this is a historical figure.";
             }
-            
+            if (q.includes('historical') || q.includes('history')) {
+                return answer.type === 'historical' ? "Yes, this is a historical figure." : "No, this is a scientist.";
+            }
             if (q.includes('nobel') || q.includes('prize')) {
                 return answer.nobel ? "Yes, this person won a Nobel Prize." : "No, this person did not win a Nobel Prize.";
             }
-            
-            if (q.includes('century') || q.includes('era') || q.includes('time period')) {
+            if (q.includes('century') || q.includes('era') || q.includes('time period') || q.match(/\b\d{1,2}(st|nd|rd|th) century\b/)) {
                 return `This person was active in the ${answer.era}.`;
             }
-            
             if (q.includes('physics') || q.includes('physicist')) {
                 return answer.field === 'physics' ? "Yes, this person worked in physics." : "No, this person did not work in physics.";
             }
-            
-            if (q.includes('space') || q.includes('astronaut') || q.includes('rocket')) {
+            if (q.includes('math') || q.includes('mathematician')) {
+                return answer.field === 'mathematics' ? "Yes, this person worked in mathematics." : "No, this person did not work in mathematics.";
+            }
+            if (q.includes('chemistry') || q.includes('chemist')) {
+                return answer.field === 'chemistry' ? "Yes, this person worked in chemistry." : "No, this person did not work in chemistry.";
+            }
+            if (q.includes('astrophysics') || q.includes('astrophysicist')) {
+                return answer.field === 'astrophysics' ? "Yes, this person worked in astrophysics." : "No, this person did not work in astrophysics.";
+            }
+            if (q.includes('space') || q.includes('astronaut') || q.includes('rocket') || q.includes('aerospace')) {
                 return answer.field === 'space' || answer.field === 'aerospace' ? 
                     "Yes, this person worked in space/aerospace fields." : 
                     "No, this person did not work in space/aerospace fields.";
             }
-            
             if (q.includes('india') || q.includes('indian')) {
                 return "Yes, this person is from India.";
             }
-            
             if (q.includes('politic') || q.includes('leader') || q.includes('prime minister') || q.includes('president')) {
                 return answer.field === 'politics' ? "Yes, this person was involved in politics." : "No, this person was not primarily a political figure.";
             }
-            
-            // Fallback responses
-            const responses = [
-                "Yes.",
-                "No.",
-                "That's correct.",
-                "That's not correct.",
-                "I can't answer that definitively.",
-                "Please ask a different question.",
-                "Focus on yes/no questions about this person's identity."
+            if (q.includes('literature') || q.includes('writer') || q.includes('poet')) {
+                return answer.field === 'literature' ? "Yes, this person was involved in literature." : "No, this person was not known for literature.";
+            }
+            if (q.includes('revolutionary')) {
+                return answer.field === 'revolutionary' ? "Yes, this person was a revolutionary." : "No, this person was not a revolutionary.";
+            }
+            if (q.includes('royalty') || q.includes('king') || q.includes('queen') || q.includes('maharaj') || q.includes('sultan')) {
+                return answer.field === 'royalty' ? "Yes, this person was royalty." : "No, this person was not royalty.";
+            }
+            if (q.includes('spiritual') || q.includes('spirituality') || q.includes('monk') || q.includes('swami')) {
+                return answer.field === 'spirituality' ? "Yes, this person was known for spirituality." : "No, this person was not known for spirituality.";
+            }
+            // Fallback responses (neutral)
+            const fallbackResponses = [
+                "I'm not able to answer that directly. Please try a different yes/no question.",
+                "Please rephrase your question to focus on yes/no aspects.",
+                "Try narrowing down the field, era, or achievements.",
+                "I can't answer that specifically. Please ask another yes/no question."
             ];
-            return responses[Math.floor(Math.random() * responses.length)];
+            return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
         }
 
         // Event listeners with proper cleanup
