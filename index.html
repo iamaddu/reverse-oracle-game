@@ -6,17 +6,17 @@
     <title>Reverse Oracle Game</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-dark: #1d4ed8;
-            --secondary: #e0e7ff;
-            --bg-gradient-start: #4f8cff;
-            --bg-gradient-end: #e0e7ff;
-            --text-dark: #1e293b;
-            --text-light: #f8fafc;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --primary: #1cb3c8;           /* Teal from logo */
+            --primary-light: #4fd1d9;     /* Lighter teal */
+            --primary-dark: #0e5e6f;      /* Dark teal/blue */
+            --secondary: #e0f7fa;         /* Very light teal */
+            --bg-gradient-start: #0e5e6f; /* Dark teal/blue */
+            --bg-gradient-end: #181c1f;   /* Blackish background */
+            --text-dark: #181c1f;         /* Use dark text for light backgrounds */
+            --text-light: #f8fafc;        /* Use light text for dark backgrounds */
+            --shadow-sm: 0 1px 2px rgba(28,179,200,0.08);
+            --shadow-md: 0 4px 6px rgba(28,179,200,0.12);
+            --shadow-lg: 0 10px 15px rgba(28,179,200,0.15);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -38,13 +38,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            color: var(--text-dark);
+            color: var(--text-light);
             line-height: 1.5;
             padding: 1rem;
         }
 
         #game-container {
-            background: #fff;
+            background: #23272a;
+            color: var(--text-light);
             margin-top: 2rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
@@ -68,11 +69,11 @@
         }
 
         #instructions {
-            color: var(--text-dark);
+            color: #c0e7ef;
             font-size: clamp(0.9rem, 3vw, 1rem);
             margin-bottom: 1.5rem;
             text-align: center;
-            opacity: 0.9;
+            opacity: 0.95;
             max-width: 90%;
         }
 
@@ -86,6 +87,7 @@
 
         #question-log {
             background: #f8fafc;
+            color: #181c1f;
             border-radius: var(--radius-md);
             width: 100%;
             min-height: 12rem;
@@ -283,8 +285,9 @@
     </style>
 </head>
 <body>
+    <!-- RUDRA Logo at the top -->
+    <img src="rudra-logo.jpeg" alt="RUDRA Logo" style="display:block; margin:2rem auto 1rem auto; width:130px; max-width:40vw; border-radius:16px; background:#181c1f; box-shadow:0 4px 16px rgba(28,179,200,0.18);">
     <div id="game-container">
-        <img src="logo.jpg" alt="RUDRA Logo" style="width:100px;max-width:40vw;display:block;margin:0 auto 1rem auto;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff;" />
         <h1>Reverse Oracle Game</h1>
         <div id="instructions">
             <p>Guess the famous scientist or historical figure by asking up to 10 yes/no questions!</p>
