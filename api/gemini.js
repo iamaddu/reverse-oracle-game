@@ -3,11 +3,24 @@ module.exports = async (req, res) => {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
-  const { question, answer } = req.body;
-  if (!question || !answer) {
-    res.status(400).json({ error: 'Missing question or answer.' });
+  const { question, answer, type } = req.body;
+  if (!question || !answer || !type) {
+    res.status(400).json({ error: 'Missing question, answer, or type.' });
     return;
   }
+
+  // Guarantee correct answers for type/gender questions
+  const q = question.toLowerCase();
+  // Scientist/historical logic
+  if (q.includes('scientist')) {
+    return res.status(200).json({ answer: type === 'scientist' ? 'Yes.' : 'No.' });
+  }
+  if (q.includes('historical')) {
+    return res.status(200).json({ answer: type === 'historical' ? 'Yes.' : 'No.' });
+  }
+  // Gender logic (add gender property to character list and pass it from frontend for best results)
+  // Example: if (q.includes('female')) { return res.status(200).json({ answer: gender === 'female' ? 'Yes.' : 'No.' }); }
+  // For now, fallback to Gemini for gender and other questions
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_API_KEY) {
     res.status(500).json({ error: 'API key not configured.' });
