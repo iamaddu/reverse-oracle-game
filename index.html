@@ -564,14 +564,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initGame();
             
-            // Service worker registration for PWA
-            if (window.location.protocol === 'https:') {
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('/sw.js').catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-                }
-            }
+            // Service worker registration removed for Vercel compatibility
         });
     </script>
 </body>
