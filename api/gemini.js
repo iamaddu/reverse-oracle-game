@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   }
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
   try {
-    const prompt = `You are the Reverse Oracle for a fun guessing game. The answer is: ${answer}. The type is: ${req.body.type}. Only reply YES or NO to questions that can be answered that way. If the question is not yes/no (for example, 'hint'), reply: 'Please ask a yes/no question!' Never reveal the answer directly. If the question is truly unanswerable, reply: 'I cannot answer that.' After your answer, add a short, witty explanation or fun fact about the answer, but never say 'maybe'. Make it awesome!`;
+    const prompt = `You are the Reverse Oracle for a guessing game. The answer is: ${answer}. Type: ${req.body.type}. Only reply YES or NO to yes/no questions. If the question is not yes/no, reply: 'Please ask a yes/no question!' Never reveal the answer directly. If you cannot answer, reply: 'I cannot answer that.' Add a short, fun fact or witty comment after your answer. Never say 'maybe'.`;
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -24,7 +24,12 @@ module.exports = async (req, res) => {
       })
     });
     const data = await response.json();
-    const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, no response.';
+    let aiText = 'Sorry, no response.';
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      aiText = data.candidates[0].content.parts[0].text;
+    } else if (data?.error?.message) {
+      aiText = `Error: ${data.error.message}`;
+    }
     res.status(200).json({ answer: aiText });
   } catch (err) {
     console.error('Gemini API error:', err);
