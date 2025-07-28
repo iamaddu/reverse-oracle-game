@@ -88,12 +88,18 @@ const chosen = characterList.find(c => c.name.toLowerCase() === answer.toLowerCa
     // Build a summary of the chosen person for Gemini
     let summary = '';
     if (chosen) {
-      summary = `Here are some facts about the person:\nName: ${chosen.name}\nType: ${chosen.type || ''}\nGender: ${chosen.gender || ''}\nField: ${chosen.field || ''}\nBirthplace: ${chosen.birthplace || ''}\nNobel Prize: ${chosen.nobel !== undefined ? (chosen.nobel ? 'Yes' : 'No') : ''}`;
+      summary = `Here are all known facts about the person for your reference:\n` +
+        `Name: ${chosen.name}\n` +
+        `Type: ${chosen.type || 'Unknown'}\n` +
+        `Gender: ${chosen.gender || 'Unknown'}\n` +
+        `Field: ${chosen.field || 'Unknown'}\n` +
+        `Birthplace: ${chosen.birthplace || 'Unknown'}\n` +
+        `Nobel Prize: ${chosen.nobel !== undefined ? (chosen.nobel ? 'Yes' : 'No') : 'Unknown'}\n`;
     }
     // Compose the prompt for Gemini
     const prompt = summary
-      ? `${summary}\n\nQuestion: ${question}\nAnswer in yes/no if possible, otherwise provide a short factual answer.`
-      : `Question: ${question}\nAnswer in yes/no if possible, otherwise provide a short factual answer.`;
+      ? `${summary}\n\nYou are an expert on famous Indian scientists and historical figures. Based on the above facts and your own knowledge, answer the following question in yes/no if possible, otherwise provide a short factual answer.\nQuestion: ${question}`
+      : `You are an expert on famous Indian scientists and historical figures. Answer the following question in yes/no if possible, otherwise provide a short factual answer.\nQuestion: ${question}`;
     const response = await fetch('https://api.gemini.com/v1/endpoint', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
