@@ -490,28 +490,23 @@
             }
         }
 
-        // Handle guess submission
+        // Handle guess submission (does NOT decrement questionsLeft)
         function handleGuess() {
             if (gameState.gameOver) return;
-            
             const guess = prompt("Who do you think it is?");
             if (!guess) return;
-            
             // Basic validation
             if (guess.length > 80) {
                 addMessage('ai', "Guess too long. Please keep it under 80 characters.");
                 return;
             }
-            
             addMessage('player', `My guess: ${guess}`);
-            
             if (guess.toLowerCase() === gameState.answer.name.toLowerCase()) {
                 handleCorrectGuess();
             } else {
                 addMessage('ai', "No, that's not correct!");
-                gameState.questionsLeft--;
-                elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
-                
+                // Do NOT decrement questionsLeft for guesses
+                // If no questions left after this guess, end game
                 if (gameState.questionsLeft <= 0) {
                     endGame(false);
                 }
