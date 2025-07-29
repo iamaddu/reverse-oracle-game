@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-  // ... (your existing character list remains exactly the same)
+  
   const characterList = [
   { name: "C. V. Raman", gender: "male", isDead: true, dateOfDeath: 1970, field: "physics", dynasty: null, era: "20th century", birthplace: "India", nobel: true, achievements: ["Raman Effect", "Nobel Prize in Physics"] },
   { name: "Rani Lakshmibai", gender: "female", isDead: true, dateOfDeath: 1858, field: "royalty", dynasty: "Maratha", era: "19th century", birthplace: "India", nobel: false, achievements: ["Queen of Jhansi", "Indian Rebellion of 1857"] },
