@@ -614,12 +614,14 @@
             if (q.includes("century") || q.includes("era") || q.includes("time period") || q.match(/\b\d{1,2}(st|nd|rd|th) century\b/)) {
                 return formatAnswer(`This person was active in the ${answer.era}.`);
             }
-            // Gender (strict yes/no)
-            if (q.includes("female")) {
-                return "Yes".repeat(answer.gender === "female") + "No".repeat(answer.gender !== "female");
+            // Gender (expanded synonyms, strict yes/no)
+            const femaleSynonyms = ["female", "woman", "girl", "lady"];
+            const maleSynonyms = ["male", "man", "boy", "gentleman"];
+            if (femaleSynonyms.some(s => q.includes(normalize(s)))) {
+                return answer.gender === "female" ? "Yes." : "No.";
             }
-            if (q.includes("male")) {
-                return "Yes".repeat(answer.gender === "male") + "No".repeat(answer.gender !== "male");
+            if (maleSynonyms.some(s => q.includes(normalize(s)))) {
+                return answer.gender === "male" ? "Yes." : "No.";
             }
             // Nationality (India-specific)
             if (q.includes("india") || q.includes("indian")) {
