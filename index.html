@@ -314,30 +314,26 @@
 
         // --- Character List (metadata for each) ---
         const characters = [
-            { name: "C. V. Raman", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: true, alive: false },
-            { name: "Homi J. Bhabha", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: false, alive: false },
-            { name: "Vikram Sarabhai", type: "scientist", gender: "male", field: "space", era: "20th century", nobel: false, alive: false },
-            { name: "A. P. J. Abdul Kalam", type: "scientist", gender: "male", field: "aerospace", era: "20th-21st century", nobel: false, alive: false },
-            { name: "Satyendra Nath Bose", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: false, alive: false },
-            { name: "Jagadish Chandra Bose", type: "scientist", gender: "male", field: "physics", era: "19th-20th century", nobel: false, alive: false },
-            { name: "Srinivasa Ramanujan", type: "scientist", gender: "male", field: "mathematics", era: "20th century", nobel: false, alive: false },
-            { name: "Meghnad Saha", type: "scientist", gender: "male", field: "astrophysics", era: "20th century", nobel: false, alive: false },
-            { name: "Subrahmanyan Chandrasekhar", type: "scientist", gender: "male", field: "astrophysics", era: "20th century", nobel: true, alive: false },
-            { name: "Venkatraman Ramakrishnan", type: "scientist", gender: "male", field: "chemistry", era: "21st century", nobel: true, alive: true },
-            { name: "Kalpana Chawla", type: "scientist", gender: "female", field: "aerospace", era: "20th-21st century", nobel: false, alive: false },
-            { name: "Asima Chatterjee", type: "scientist", gender: "female", field: "chemistry", era: "20th century", nobel: false, alive: false },
-            { name: "Mahatma Gandhi", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
-            { name: "Jawaharlal Nehru", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
-            { name: "Sardar Vallabhbhai Patel", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
-            { name: "Bhagat Singh", type: "historical", gender: "male", field: "revolutionary", era: "20th century", nobel: false, alive: false },
-            { name: "Rani Lakshmibai", type: "historical", gender: "female", field: "royalty", era: "19th century", nobel: false, alive: false },
-            { name: "Subhas Chandra Bose", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
-            { name: "Rabindranath Tagore", type: "historical", gender: "male", field: "literature", era: "19th-20th century", nobel: true, alive: false },
-            { name: "Swami Vivekananda", type: "historical", gender: "male", field: "spirituality", era: "19th century", nobel: false, alive: false },
-            { name: "Chhatrapati Shivaji Maharaj", type: "historical", gender: "male", field: "royalty", era: "17th century", nobel: false, alive: false },
-            { name: "Tipu Sultan", type: "historical", gender: "male", field: "royalty", era: "18th century", nobel: false, alive: false },
-            { name: "Dr. B. R. Ambedkar", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
-            { name: "Sarojini Naidu", type: "historical", gender: "female", field: "politics", era: "20th century", nobel: false, alive: false }
+          // ...existing code...
+          { name: "C. V. Raman", gender: "male", isDead: true, dateOfDeath: 1970, field: "physics", dynasty: null, era: "20th century", birthplace: "India", nobel: true, achievements: ["Raman Effect", "Nobel Prize in Physics"] },
+          { name: "Rani Lakshmibai", gender: "female", isDead: true, dateOfDeath: 1858, field: "royalty", dynasty: "Maratha", era: "19th century", birthplace: "India", nobel: false, achievements: ["Queen of Jhansi", "Indian Rebellion of 1857"] },
+          { name: "Albert Einstein", gender: "male", isDead: true, dateOfDeath: 1955, field: "physics", dynasty: null, era: "20th century", birthplace: "Germany", nobel: true, achievements: ["Theory of Relativity", "Nobel Prize in Physics"] },
+          { name: "Marie Curie", gender: "female", isDead: true, dateOfDeath: 1934, field: "chemistry", dynasty: null, era: "19th-20th century", birthplace: "Poland", nobel: true, achievements: ["Radioactivity", "Nobel Prize in Chemistry", "Nobel Prize in Physics"] },
+          { name: "Mahatma Gandhi", gender: "male", isDead: true, dateOfDeath: 1948, field: "politics", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Indian Independence Movement"] },
+          { name: "A. P. J. Abdul Kalam", gender: "male", isDead: true, dateOfDeath: 2015, field: "aerospace", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Missile Man of India", "President of India"] },
+          { name: "Isaac Newton", gender: "male", isDead: true, dateOfDeath: 1727, field: "physics", dynasty: null, era: "17th-18th century", birthplace: "England", nobel: false, achievements: ["Laws of Motion", "Calculus"] },
+          { name: "Nikola Tesla", gender: "male", isDead: true, dateOfDeath: 1943, field: "engineering", dynasty: null, era: "19th-20th century", birthplace: "Serbia", nobel: false, achievements: ["AC Current", "Tesla Coil"] },
+          { name: "Bhagat Singh", gender: "male", isDead: true, dateOfDeath: 1931, field: "revolutionary", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Indian Freedom Fighter"] },
+          { name: "Kalpana Chawla", gender: "female", isDead: true, dateOfDeath: 2003, field: "aerospace", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["NASA Astronaut"] },
+          { name: "Aryabhata", gender: "male", isDead: true, dateOfDeath: 550, field: "mathematics", dynasty: null, era: "5th-6th century", birthplace: "India", nobel: false, achievements: ["Zero Concept", "Aryabhata's Astronomy"] },
+          { name: "Srinivasa Ramanujan", gender: "male", isDead: true, dateOfDeath: 1920, field: "mathematics", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Ramanujan Number", "Mathematical Theories"] },
+          { name: "Swami Vivekananda", gender: "male", isDead: true, dateOfDeath: 1902, field: "spirituality", dynasty: null, era: "19th-20th century", birthplace: "India", nobel: false, achievements: ["Vedanta Philosophy", "Chicago Speech"] },
+          { name: "Rabindranath Tagore", gender: "male", isDead: true, dateOfDeath: 1941, field: "literature", dynasty: null, era: "19th-20th century", birthplace: "India", nobel: true, achievements: ["Gitanjali", "Nobel Prize in Literature"] },
+          { name: "Chandragupta Maurya", gender: "male", isDead: true, dateOfDeath: -297, field: "royalty", dynasty: "Maurya", era: "Ancient", birthplace: "India", nobel: false, achievements: ["Founder of Maurya Empire"] },
+          { name: "Ashoka", gender: "male", isDead: true, dateOfDeath: -232, field: "royalty", dynasty: "Maurya", era: "Ancient", birthplace: "India", nobel: false, achievements: ["Kalinga War", "Spread of Buddhism"] },
+          { name: "Ada Lovelace", gender: "female", isDead: true, dateOfDeath: 1852, field: "mathematics", dynasty: null, era: "19th century", birthplace: "England", nobel: false, achievements: ["First Computer Algorithm"] },
+          { name: "Galileo Galilei", gender: "male", isDead: true, dateOfDeath: 1642, field: "physics", dynasty: null, era: "16th-17th century", birthplace: "Italy", nobel: false, achievements: ["Telescope", "Heliocentrism"] },
+          { name: "Raja Raja Chola I", gender: "male", isDead: true, dateOfDeath: 1014, field: "royalty", dynasty: "Chola", era: "11th century", birthplace: "India", nobel: false, achievements: ["Chola Empire Expansion"] }
         ];
 
         // --- DOM Elements ---
@@ -524,49 +520,16 @@
             await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
             const q = normalize(question);
             const answer = gameState.answer;
-            // Alive/Dead queries
+            // Alive/Dead queries (strict yes/no)
             const deadSynonyms = ["dead", "die", "passed away", "no longer living", "deceased", "not alive", "not living", "died", "death"];
             const aliveSynonyms = ["alive", "living", "still alive", "currently alive", "surviving", "exist", "exists", "is living"];
             const isDeadQuery = deadSynonyms.some(s => q.includes(normalize(s)));
             const isAliveQuery = aliveSynonyms.some(s => q.includes(normalize(s)));
-            if (isDeadQuery || isAliveQuery) {
-                if (answer.alive) {
-                    if (isDeadQuery) {
-                        const variants = [
-                            "No, this person is still alive.",
-                            "No, he is still alive.",
-                            "No, she is still alive.",
-                            "No, they are still alive."
-                        ];
-                        let reply = variants[0];
-                        if (answer.gender === "male") reply = variants[1];
-                        else if (answer.gender === "female") reply = variants[2];
-                        return formatAnswer(reply);
-                    } else {
-                        const variants = [
-                            "Yes, this person is alive.",
-                            "Yes, he is still alive.",
-                            "Yes, she is still alive.",
-                            "Yes, they are still alive."
-                        ];
-                        let reply = variants[0];
-                        if (answer.gender === "male") reply = variants[1];
-                        else if (answer.gender === "female") reply = variants[2];
-                        return formatAnswer(reply);
-                    }
-                } else {
-                    if (isDeadQuery) {
-                        let reply = "Yes, this person is no longer alive.";
-                        if (answer.gender === "male") reply = "Yes, he is no longer alive.";
-                        else if (answer.gender === "female") reply = "Yes, she is no longer alive.";
-                        return formatAnswer(reply);
-                    } else {
-                        let reply = "No, this person is no longer alive.";
-                        if (answer.gender === "male") reply = "No, he is no longer alive.";
-                        else if (answer.gender === "female") reply = "No, she is no longer alive.";
-                        return formatAnswer(reply);
-                    }
-                }
+            if (isDeadQuery) {
+                return answer.isDead ? "Yes." : "No.";
+            }
+            if (isAliveQuery) {
+                return answer.isDead ? "No." : "Yes.";
             }
             // Scientist/Historical figure
             if (q.includes("scientist") || q.includes("science")) {
@@ -623,9 +586,9 @@
             if (maleSynonyms.some(s => q.includes(normalize(s)))) {
                 return answer.gender === "male" ? "Yes." : "No.";
             }
-            // Nationality (India-specific)
+            // Nationality (India-specific, strict yes/no)
             if (q.includes("india") || q.includes("indian")) {
-                return formatAnswer("Yes, this person is from India.");
+                return answer.birthplace && answer.birthplace.includes("India") ? "Yes." : "No.";
             }
             // Fallback for unrelated questions
             return formatAnswer("I can't answer that directly. Please ask a yes/no question.");
