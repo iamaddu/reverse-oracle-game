@@ -1,25 +1,16 @@
 const fetch = require('node-fetch');
   
   const characterList = [
-  { name: "C. V. Raman", gender: "male", isDead: true, dateOfDeath: 1970, field: "physics", dynasty: null, era: "20th century", birthplace: "India", nobel: true, achievements: ["Raman Effect", "Nobel Prize in Physics"] },
-  { name: "Rani Lakshmibai", gender: "female", isDead: true, dateOfDeath: 1858, field: "royalty", dynasty: "Maratha", era: "19th century", birthplace: "India", nobel: false, achievements: ["Queen of Jhansi", "Indian Rebellion of 1857"] },
+  { name: "Thomas Edison", gender: "male", isDead: true, dateOfDeath: 1931, field: "invention", dynasty: null, era: "19th-20th century", birthplace: "United States", nobel: false, achievements: ["Light Bulb", "Phonograph", "Motion Picture Camera"] },
+  { name: "Alexander Graham Bell", gender: "male", isDead: true, dateOfDeath: 1922, field: "invention", dynasty: null, era: "19th-20th century", birthplace: "Scotland", nobel: false, achievements: ["Telephone", "Audiometer"] },
   { name: "Albert Einstein", gender: "male", isDead: true, dateOfDeath: 1955, field: "physics", dynasty: null, era: "20th century", birthplace: "Germany", nobel: true, achievements: ["Theory of Relativity", "Nobel Prize in Physics"] },
   { name: "Marie Curie", gender: "female", isDead: true, dateOfDeath: 1934, field: "chemistry", dynasty: null, era: "19th-20th century", birthplace: "Poland", nobel: true, achievements: ["Radioactivity", "Nobel Prize in Chemistry", "Nobel Prize in Physics"] },
-  { name: "Mahatma Gandhi", gender: "male", isDead: true, dateOfDeath: 1948, field: "politics", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Indian Independence Movement"] },
-  { name: "A. P. J. Abdul Kalam", gender: "male", isDead: true, dateOfDeath: 2015, field: "aerospace", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Missile Man of India", "President of India"] },
-  { name: "Isaac Newton", gender: "male", isDead: true, dateOfDeath: 1727, field: "physics", dynasty: null, era: "17th-18th century", birthplace: "England", nobel: false, achievements: ["Laws of Motion", "Calculus"] },
-  { name: "Nikola Tesla", gender: "male", isDead: true, dateOfDeath: 1943, field: "engineering", dynasty: null, era: "19th-20th century", birthplace: "Serbia", nobel: false, achievements: ["AC Current", "Tesla Coil"] },
-  { name: "Bhagat Singh", gender: "male", isDead: true, dateOfDeath: 1931, field: "revolutionary", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Indian Freedom Fighter"] },
-  { name: "Kalpana Chawla", gender: "female", isDead: true, dateOfDeath: 2003, field: "aerospace", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["NASA Astronaut"] },
-  { name: "Aryabhata", gender: "male", isDead: true, dateOfDeath: 550, field: "mathematics", dynasty: null, era: "5th-6th century", birthplace: "India", nobel: false, achievements: ["Zero Concept", "Aryabhata's Astronomy"] },
-  { name: "Srinivasa Ramanujan", gender: "male", isDead: true, dateOfDeath: 1920, field: "mathematics", dynasty: null, era: "20th century", birthplace: "India", nobel: false, achievements: ["Ramanujan Number", "Mathematical Theories"] },
-  { name: "Swami Vivekananda", gender: "male", isDead: true, dateOfDeath: 1902, field: "spirituality", dynasty: null, era: "19th-20th century", birthplace: "India", nobel: false, achievements: ["Vedanta Philosophy", "Chicago Speech"] },
-  { name: "Rabindranath Tagore", gender: "male", isDead: true, dateOfDeath: 1941, field: "literature", dynasty: null, era: "19th-20th century", birthplace: "India", nobel: true, achievements: ["Gitanjali", "Nobel Prize in Literature"] },
-  { name: "Chandragupta Maurya", gender: "male", isDead: true, dateOfDeath: -297, field: "royalty", dynasty: "Maurya", era: "Ancient", birthplace: "India", nobel: false, achievements: ["Founder of Maurya Empire"] },
-  { name: "Ashoka", gender: "male", isDead: true, dateOfDeath: -232, field: "royalty", dynasty: "Maurya", era: "Ancient", birthplace: "India", nobel: false, achievements: ["Kalinga War", "Spread of Buddhism"] },
-  { name: "Ada Lovelace", gender: "female", isDead: true, dateOfDeath: 1852, field: "mathematics", dynasty: null, era: "19th century", birthplace: "England", nobel: false, achievements: ["First Computer Algorithm"] },
-  { name: "Galileo Galilei", gender: "male", isDead: true, dateOfDeath: 1642, field: "physics", dynasty: null, era: "16th-17th century", birthplace: "Italy", nobel: false, achievements: ["Telescope", "Heliocentrism"] },
-  { name: "Raja Raja Chola I", gender: "male", isDead: true, dateOfDeath: 1014, field: "royalty", dynasty: "Chola", era: "11th century", birthplace: "India", nobel: false, achievements: ["Chola Empire Expansion"] }
+  { name: "Isaac Newton", gender: "male", isDead: true, dateOfDeath: 1727, field: "physics", dynasty: null, era: "17th-18th century", birthplace: "England", nobel: false, achievements: ["Laws of Motion", "Calculus", "Gravity"] },
+  { name: "Nikola Tesla", gender: "male", isDead: true, dateOfDeath: 1943, field: "engineering", dynasty: null, era: "19th-20th century", birthplace: "Serbia", nobel: false, achievements: ["AC Current", "Tesla Coil", "Wireless Power"] },
+  { name: "Ada Lovelace", gender: "female", isDead: true, dateOfDeath: 1852, field: "mathematics", dynasty: null, era: "19th century", birthplace: "England", nobel: false, achievements: ["First Computer Algorithm", "Analytical Engine"] },
+  { name: "Charles Darwin", gender: "male", isDead: true, dateOfDeath: 1882, field: "biology", dynasty: null, era: "19th century", birthplace: "England", nobel: false, achievements: ["Theory of Evolution", "Natural Selection"] },
+  { name: "Stephen Hawking", gender: "male", isDead: true, dateOfDeath: 2018, field: "physics", dynasty: null, era: "20th-21st century", birthplace: "England", nobel: false, achievements: ["Black Hole Theory", "A Brief History of Time"] },
+  { name: "Galileo Galilei", gender: "male", isDead: true, dateOfDeath: 1642, field: "physics", dynasty: null, era: "16th-17th century", birthplace: "Italy", nobel: false, achievements: ["Telescope", "Heliocentrism", "Scientific Method"] }
 ];
 
 
@@ -190,12 +181,16 @@ module.exports = async (req, res) => {
     }
 
     // Achievement questions
-    if (["achieve", "known for", "famous", "contribution", "discovery", "invention"].some(word => normalizedQ.includes(word))) {
-      if (chosen.achievements && chosen.achievements.some(ach => normalizedQ.includes(normalizeString(ach)))) {
-        return res.status(200).json({ answer: "Yes." });
-      } else {
-        return res.status(200).json({ answer: "No." });
-      }
+    if (
+      chosen.achievements &&
+      chosen.achievements.some(ach =>
+        normalizedQ.includes(normalizeString(ach)) ||
+        normalizeString(ach).includes(normalizedQ)
+      )
+    ) {
+      return res.status(200).json({ answer: "Yes." });
+    } else {
+      return res.status(200).json({ answer: "No." });
     }
 
     // Book/Work questions
