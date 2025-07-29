@@ -309,9 +309,11 @@
     </div>
 
     <script>
-        // Game characters with detailed metadata
+        // Reverse Oracle Prize Game - Complete JavaScript Logic (Production-Ready)
+        // Assumes HTML structure with #game-container, #question-input, #submit-btn, #guess-btn, #question-log, #remaining-questions, #result-area, #result-text, #play-again-btn
+
+        // --- Character List (metadata for each) ---
         const characters = [
-            // Indian Scientists
             { name: "C. V. Raman", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: true, alive: false },
             { name: "Homi J. Bhabha", type: "scientist", gender: "male", field: "physics", era: "20th century", nobel: false, alive: false },
             { name: "Vikram Sarabhai", type: "scientist", gender: "male", field: "space", era: "20th century", nobel: false, alive: false },
@@ -324,8 +326,6 @@
             { name: "Venkatraman Ramakrishnan", type: "scientist", gender: "male", field: "chemistry", era: "21st century", nobel: true, alive: true },
             { name: "Kalpana Chawla", type: "scientist", gender: "female", field: "aerospace", era: "20th-21st century", nobel: false, alive: false },
             { name: "Asima Chatterjee", type: "scientist", gender: "female", field: "chemistry", era: "20th century", nobel: false, alive: false },
-            
-            // Indian Historical Figures
             { name: "Mahatma Gandhi", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
             { name: "Jawaharlal Nehru", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
             { name: "Sardar Vallabhbhai Patel", type: "historical", gender: "male", field: "politics", era: "20th century", nobel: false, alive: false },
@@ -340,7 +340,7 @@
             { name: "Sarojini Naidu", type: "historical", gender: "female", field: "politics", era: "20th century", nobel: false, alive: false }
         ];
 
-        // DOM elements
+        // --- DOM Elements ---
         const elements = {
             questionLog: document.getElementById('question-log'),
             questionInput: document.getElementById('question-input'),
@@ -353,7 +353,7 @@
             gameContainer: document.getElementById('game-container')
         };
 
-        // Game state
+        // --- Game State ---
         let gameState = {
             answer: null,
             questionsLeft: 10,
@@ -362,182 +362,34 @@
             questionsAsked: []
         };
 
-        // Initialize game
-        function initGame() {
-            const chosen = characters[Math.floor(Math.random() * characters.length)];
-            gameState = {
-                answer: chosen,
-                questionsLeft: 10,
-                gameOver: false,
-                loading: false,
-                questionsAsked: []
-            };
-            
-            elements.questionLog.innerHTML = '';
-            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
-            elements.resultArea.style.display = 'none';
-            elements.questionInput.disabled = false;
-            elements.submitBtn.disabled = false;
-            elements.guessBtn.disabled = false;
-            elements.questionInput.value = '';
-            elements.questionInput.focus();
-            
-            addMessage('ai', `I'm thinking of a famous ${chosen.type} figure. Ask me yes/no questions to guess who it is!`);
+        // --- Utility Functions ---
+        function normalize(str) {
+            return str.toLowerCase().replace(/[^\w\s]/g, '').trim();
         }
-
-        // Sanitize input to prevent XSS
         function sanitizeInput(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
         }
-
-        // Add message to chat
+        function formatAnswer(text) {
+            const parts = text.split(/(?<=\.)\s+/);
+            if (parts.length > 1) {
+                return '<ul>' + parts.map(p => `<li>${sanitizeInput(p)}</li>`).join('') + '</ul>';
+            }
+            return `<div>${sanitizeInput(text)}</div>`;
+        }
         function addMessage(sender, text) {
             const msgDiv = document.createElement('div');
             msgDiv.className = sender === 'player' ? 'msg-player' : 'msg-ai';
-            
-            const prefix = sender === 'player' ? 'You: ' : 
-                          text.startsWith('Correct!') || text.startsWith("No,") ? '' : 'AI: ';
-            msgDiv.innerHTML = sanitizeInput(prefix + text);
-            
+            const prefix = sender === 'player' ? 'You: ' : '';
+            msgDiv.innerHTML = sanitizeInput(prefix) + text;
             elements.questionLog.appendChild(msgDiv);
             elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
         }
 
-        // Show loading indicator
-        function showLoading() {
-            if (gameState.loading) return;
-            gameState.loading = true;
-            
-            const spinner = document.createElement('div');
-            spinner.className = 'msg-ai';
-            spinner.id = 'ai-loading';
-            spinner.innerHTML = '<span class="spinner"></span> Thinking...';
-            elements.questionLog.appendChild(spinner);
-            elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
-        }
-
-        // Hide loading indicator
-        function hideLoading() {
-            gameState.loading = false;
-            const spinner = document.getElementById('ai-loading');
-            if (spinner) spinner.remove();
-        }
-
-        // Debounce to prevent rapid submissions
-        let lastSubmissionTime = 0;
-        const DEBOUNCE_TIME = 500;
-
-        // Handle question submission
-        async function handleQuestion() {
-            const now = Date.now();
-            if (gameState.gameOver || gameState.loading || now - lastSubmissionTime < DEBOUNCE_TIME) return;
-            lastSubmissionTime = now;
-            
-            const userInput = elements.questionInput.value.trim();
-            if (!userInput) {
-                elements.questionInput.focus();
-                return;
-            }
-            
-            // Prevent duplicate questions
-            if (gameState.questionsAsked.some(q => q.toLowerCase() === userInput.toLowerCase())) {
-                addMessage('ai', "You already asked that question. Try a different one.");
-                return;
-            }
-            
-            // Track asked questions
-            gameState.questionsAsked.push(userInput);
-            
-            addMessage('player', userInput);
-            elements.questionInput.value = '';
-            gameState.questionsLeft--;
-            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
-
-            // Check if user guessed directly or partially in the question
-            const answerName = gameState.answer.name.toLowerCase();
-            const userInputLower = userInput.toLowerCase();
-            // Direct match
-            if (userInputLower.includes(answerName)) {
-                handleCorrectGuess();
-                return;
-            }
-            // Partial name match (at least 2 words from the answer's name)
-            const answerParts = answerName.split(/\s+/).filter(w => w.length > 2);
-            let matchCount = 0;
-            for (const part of answerParts) {
-                if (userInputLower.includes(part)) matchCount++;
-            }
-            if (answerParts.length > 1 && matchCount >= 2) {
-                handleCorrectGuess();
-                return;
-            }
-
-            showLoading();
-            try {
-                const response = await getAIResponse(userInput);
-                addMessage('ai', response);
-                
-                if (gameState.questionsLeft <= 0 && !gameState.gameOver) {
-                    endGame(false);
-                }
-            } catch (error) {
-                addMessage('ai', "Sorry, I encountered an error. Please try again.");
-                console.error("API Error:", error);
-            } finally {
-                hideLoading();
-            }
-        }
-
-        // Handle guess submission (does NOT decrement questionsLeft)
-        function handleGuess() {
-            if (gameState.gameOver) return;
-            const guess = prompt("Who do you think it is?");
-            if (!guess) return;
-            // Basic validation
-            if (guess.length > 80) {
-                addMessage('ai', "Guess too long. Please keep it under 80 characters.");
-                return;
-            }
-            addMessage('player', `My guess: ${guess}`);
-            if (guess.toLowerCase() === gameState.answer.name.toLowerCase()) {
-                handleCorrectGuess();
-            } else {
-                addMessage('ai', "No, that's not correct!");
-                // Do NOT decrement questionsLeft for guesses
-                // If no questions left after this guess, end game
-                if (gameState.questionsLeft <= 0) {
-                    endGame(false);
-                }
-            }
-        }
-
-        // Handle correct guess
-        function handleCorrectGuess() {
-            addMessage('ai', `Correct! The answer was ${gameState.answer.name}.`);
-            createConfetti();
-            endGame(true);
-        }
-
-        // End game
-        function endGame(won) {
-            gameState.gameOver = true;
-            elements.questionInput.disabled = true;
-            elements.submitBtn.disabled = true;
-            elements.guessBtn.disabled = true;
-            
-            elements.resultText.textContent = won 
-                ? `🎉 You Win! It was ${gameState.answer.name}.` 
-                : `Game Over! The answer was ${gameState.answer.name}.`;
-                
-            elements.resultArea.style.display = 'flex';
-        }
-
-        // Create confetti effect
+        // --- Confetti Effect (on win) ---
         function createConfetti() {
             const colors = ['#1cb3c8', '#4fd1d9', '#0e5e6f', '#93c5fd', '#60a5fa'];
-            
             for (let i = 0; i < 50; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
@@ -547,14 +399,9 @@
                 confetti.style.width = Math.random() * 8 + 4 + 'px';
                 confetti.style.height = confetti.style.width;
                 confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
-                
                 elements.gameContainer.appendChild(confetti);
-                
-                setTimeout(() => {
-                    confetti.remove();
-                }, 5000);
+                setTimeout(() => confetti.remove(), 5000);
             }
-            
             const style = document.createElement('style');
             style.innerHTML = `
                 @keyframes fall {
@@ -567,92 +414,270 @@
             document.head.appendChild(style);
         }
 
-        // Enhanced AI response system with rule-based answers
-        async function getAIResponse(question) {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
-            
-            const q = question.toLowerCase();
-            const answer = gameState.answer;
-            
-            // Check for common and expanded question patterns
-            if (q.includes('alive') || q.includes('dead') || q.includes('die') || q.includes('living')) {
-                return answer.alive ? "Yes, this person is alive." : "No, this person is no longer alive.";
-            }
-            if (q.includes('male') || q.includes('female') || q.includes('woman') || q.includes('man') || q.includes('gender')) {
-                return answer.gender === 'male' ? "This is a male figure." : "This is a female figure.";
-            }
-            if (q.includes('scientist') || q.includes('science')) {
-                return answer.type === 'scientist' ? "Yes, this is a scientist." : "No, this is a historical figure.";
-            }
-            if (q.includes('historical') || q.includes('history')) {
-                return answer.type === 'historical' ? "Yes, this is a historical figure." : "No, this is a scientist.";
-            }
-            if (q.includes('nobel') || q.includes('prize')) {
-                return answer.nobel ? "Yes, this person won a Nobel Prize." : "No, this person did not win a Nobel Prize.";
-            }
-            if (q.includes('century') || q.includes('era') || q.includes('time period') || q.match(/\b\d{1,2}(st|nd|rd|th) century\b/)) {
-                return `This person was active in the ${answer.era}.`;
-            }
-            if (q.includes('physics') || q.includes('physicist')) {
-                return answer.field === 'physics' ? "Yes, this person worked in physics." : "No, this person did not work in physics.";
-            }
-            if (q.includes('math') || q.includes('mathematician')) {
-                return answer.field === 'mathematics' ? "Yes, this person worked in mathematics." : "No, this person did not work in mathematics.";
-            }
-            if (q.includes('chemistry') || q.includes('chemist')) {
-                return answer.field === 'chemistry' ? "Yes, this person worked in chemistry." : "No, this person did not work in chemistry.";
-            }
-            if (q.includes('astrophysics') || q.includes('astrophysicist')) {
-                return answer.field === 'astrophysics' ? "Yes, this person worked in astrophysics." : "No, this person did not work in astrophysics.";
-            }
-            if (q.includes('space') || q.includes('astronaut') || q.includes('rocket') || q.includes('aerospace')) {
-                return answer.field === 'space' || answer.field === 'aerospace' ? 
-                    "Yes, this person worked in space/aerospace fields." : 
-                    "No, this person did not work in space/aerospace fields.";
-            }
-            if (q.includes('india') || q.includes('indian')) {
-                return "Yes, this person is from India.";
-            }
-            if (q.includes('politic') || q.includes('leader') || q.includes('prime minister') || q.includes('president')) {
-                return answer.field === 'politics' ? "Yes, this person was involved in politics." : "No, this person was not primarily a political figure.";
-            }
-            if (q.includes('literature') || q.includes('writer') || q.includes('poet')) {
-                return answer.field === 'literature' ? "Yes, this person was involved in literature." : "No, this person was not known for literature.";
-            }
-            if (q.includes('revolutionary')) {
-                return answer.field === 'revolutionary' ? "Yes, this person was a revolutionary." : "No, this person was not a revolutionary.";
-            }
-            if (q.includes('royalty') || q.includes('king') || q.includes('queen') || q.includes('maharaj') || q.includes('sultan')) {
-                return answer.field === 'royalty' ? "Yes, this person was royalty." : "No, this person was not royalty.";
-            }
-            if (q.includes('spiritual') || q.includes('spirituality') || q.includes('monk') || q.includes('swami')) {
-                return answer.field === 'spirituality' ? "Yes, this person was known for spirituality." : "No, this person was not known for spirituality.";
-            }
-            // Fallback responses (neutral)
-            const fallbackResponses = [
-                "I'm not able to answer that directly. Please try a different yes/no question.",
-                "Please rephrase your question to focus on yes/no aspects.",
-                "Try narrowing down the field, era, or achievements.",
-                "I can't answer that specifically. Please ask another yes/no question."
-            ];
-            return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+        // --- Debounce ---
+        let lastSubmissionTime = 0;
+        const DEBOUNCE_TIME = 500;
+
+        // --- Game Logic Functions ---
+
+        // Start a new game
+        function initGame() {
+            const chosen = characters[Math.floor(Math.random() * characters.length)];
+            gameState = {
+                answer: chosen,
+                questionsLeft: 10,
+                gameOver: false,
+                loading: false,
+                questionsAsked: []
+            };
+            elements.questionLog.innerHTML = '';
+            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
+            elements.resultArea.style.display = 'none';
+            elements.questionInput.disabled = false;
+            elements.submitBtn.disabled = false;
+            elements.guessBtn.disabled = false;
+            elements.questionInput.value = '';
+            elements.questionInput.focus();
+            addMessage('ai', `I'm thinking of a famous ${chosen.type} figure. Ask me yes/no questions to guess who it is!`);
         }
 
-        // Event listeners with proper cleanup
+        // Handle question submission
+        async function handleQuestion() {
+            const now = Date.now();
+            if (gameState.gameOver || gameState.loading || now - lastSubmissionTime < DEBOUNCE_TIME) return;
+            lastSubmissionTime = now;
+            const userInput = elements.questionInput.value.trim();
+            // Validation
+            if (!userInput || userInput.length > 80) {
+                addMessage('ai', formatAnswer("Please enter a valid yes/no question under 80 characters."));
+                elements.questionInput.focus();
+                return;
+            }
+            // Block duplicate questions (case/punctuation-insensitive)
+            const normInput = normalize(userInput);
+            if (gameState.questionsAsked.some(q => normalize(q) === normInput)) {
+                addMessage('ai', formatAnswer("You already asked that question. Try a different one."));
+                return;
+            }
+            // Track asked questions
+            gameState.questionsAsked.push(userInput);
+            addMessage('player', userInput);
+            elements.questionInput.value = '';
+            gameState.questionsLeft--;
+            elements.remainingQuestions.textContent = `Questions remaining: ${gameState.questionsLeft}`;
+            // Direct/partial name match (at least 2 words)
+            const answerName = normalize(gameState.answer.name);
+            const inputWords = normInput.split(/\s+/);
+            const answerParts = answerName.split(/\s+/).filter(w => w.length > 2);
+            let matchCount = 0;
+            for (const part of answerParts) {
+                if (inputWords.includes(part)) matchCount++;
+            }
+            if (answerParts.length > 1 && matchCount >= 2) {
+                handleCorrectGuess();
+                return;
+            }
+            showLoading();
+            try {
+                const response = await getAIResponse(userInput);
+                addMessage('ai', response);
+                if (gameState.questionsLeft <= 0 && !gameState.gameOver) {
+                    endGame(false);
+                }
+            } catch (error) {
+                addMessage('ai', formatAnswer("Sorry, I encountered an error. Please try again."));
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Handle direct guessing (does NOT decrement questionsLeft)
+        function handleGuess() {
+            if (gameState.gameOver) return;
+            const guess = prompt("Who do you think it is?");
+            if (!guess || guess.length > 80) {
+                addMessage('ai', formatAnswer("Guess too long or empty. Please keep it under 80 characters."));
+                return;
+            }
+            addMessage('player', `My guess: ${sanitizeInput(guess)}`);
+            const normGuess = normalize(guess);
+            const answerName = normalize(gameState.answer.name);
+            // Partial name match (at least 2 words)
+            const guessParts = normGuess.split(/\s+/).filter(w => w.length > 2);
+            const answerParts = answerName.split(/\s+/).filter(w => w.length > 2);
+            let matchCount = 0;
+            for (const part of answerParts) {
+                if (guessParts.includes(part)) matchCount++;
+            }
+            if (normGuess === answerName || (answerParts.length > 1 && matchCount >= 2)) {
+                handleCorrectGuess();
+            } else {
+                addMessage('ai', formatAnswer("No, that's not correct!"));
+                if (gameState.questionsLeft <= 0) {
+                    endGame(false);
+                }
+            }
+        }
+
+        // AI response system with rule-based answers
+        async function getAIResponse(question) {
+            await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+            const q = normalize(question);
+            const answer = gameState.answer;
+            // Alive/Dead queries
+            const deadSynonyms = ["dead", "die", "passed away", "no longer living", "deceased", "not alive", "not living", "died", "death"];
+            const aliveSynonyms = ["alive", "living", "still alive", "currently alive", "surviving", "exist", "exists", "is living"];
+            const isDeadQuery = deadSynonyms.some(s => q.includes(normalize(s)));
+            const isAliveQuery = aliveSynonyms.some(s => q.includes(normalize(s)));
+            if (isDeadQuery || isAliveQuery) {
+                if (answer.alive) {
+                    if (isDeadQuery) {
+                        const variants = [
+                            "No, this person is still alive.",
+                            "No, he is still alive.",
+                            "No, she is still alive.",
+                            "No, they are still alive."
+                        ];
+                        let reply = variants[0];
+                        if (answer.gender === "male") reply = variants[1];
+                        else if (answer.gender === "female") reply = variants[2];
+                        return formatAnswer(reply);
+                    } else {
+                        const variants = [
+                            "Yes, this person is alive.",
+                            "Yes, he is still alive.",
+                            "Yes, she is still alive.",
+                            "Yes, they are still alive."
+                        ];
+                        let reply = variants[0];
+                        if (answer.gender === "male") reply = variants[1];
+                        else if (answer.gender === "female") reply = variants[2];
+                        return formatAnswer(reply);
+                    }
+                } else {
+                    if (isDeadQuery) {
+                        let reply = "Yes, this person is no longer alive.";
+                        if (answer.gender === "male") reply = "Yes, he is no longer alive.";
+                        else if (answer.gender === "female") reply = "Yes, she is no longer alive.";
+                        return formatAnswer(reply);
+                    } else {
+                        let reply = "No, this person is no longer alive.";
+                        if (answer.gender === "male") reply = "No, he is no longer alive.";
+                        else if (answer.gender === "female") reply = "No, she is no longer alive.";
+                        return formatAnswer(reply);
+                    }
+                }
+            }
+            // Scientist/Historical figure
+            if (q.includes("scientist") || q.includes("science")) {
+                return formatAnswer(answer.type === "scientist" ? "Yes, this is a scientist." : "No, this is a historical figure.");
+            }
+            if (q.includes("historical") || q.includes("history")) {
+                return formatAnswer(answer.type === "historical" ? "Yes, this is a historical figure." : "No, this is a scientist.");
+            }
+            // Field queries
+            if (q.includes("physics") || q.includes("physicist")) {
+                return formatAnswer(answer.field === "physics" ? "Yes, this person worked in physics." : "No, this person did not work in physics.");
+            }
+            if (q.includes("chemistry") || q.includes("chemist")) {
+                return formatAnswer(answer.field === "chemistry" ? "Yes, this person worked in chemistry." : "No, this person did not work in chemistry.");
+            }
+            if (q.includes("mathematics") || q.includes("math") || q.includes("mathematician")) {
+                return formatAnswer(answer.field === "mathematics" ? "Yes, this person worked in mathematics." : "No, this person did not work in mathematics.");
+            }
+            if (q.includes("politics") || q.includes("politician") || q.includes("leader") || q.includes("prime minister") || q.includes("president")) {
+                return formatAnswer(answer.field === "politics" ? "Yes, this person was involved in politics." : "No, this person was not primarily a political figure.");
+            }
+            if (q.includes("royalty") || q.includes("king") || q.includes("queen") || q.includes("maharaj") || q.includes("sultan")) {
+                return formatAnswer(answer.field === "royalty" ? "Yes, this person was royalty." : "No, this person was not royalty.");
+            }
+            if (q.includes("revolutionary")) {
+                return formatAnswer(answer.field === "revolutionary" ? "Yes, this person was a revolutionary." : "No, this person was not a revolutionary.");
+            }
+            if (q.includes("spiritual") || q.includes("spirituality") || q.includes("monk") || q.includes("swami")) {
+                return formatAnswer(answer.field === "spirituality" ? "Yes, this person was known for spirituality." : "No, this person was not known for spirituality.");
+            }
+            if (q.includes("literature") || q.includes("writer") || q.includes("poet")) {
+                return formatAnswer(answer.field === "literature" ? "Yes, this person was involved in literature." : "No, this person was not known for literature.");
+            }
+            if (q.includes("space") || q.includes("astronaut") || q.includes("rocket") || q.includes("aerospace")) {
+                return formatAnswer((answer.field === "space" || answer.field === "aerospace") ? "Yes, this person worked in space/aerospace fields." : "No, this person did not work in space/aerospace fields.");
+            }
+            if (q.includes("astrophysics") || q.includes("astrophysicist")) {
+                return formatAnswer(answer.field === "astrophysics" ? "Yes, this person worked in astrophysics." : "No, this person did not work in astrophysics.");
+            }
+            // Nobel Prize
+            if (q.includes("nobel") || q.includes("prize")) {
+                return formatAnswer(answer.nobel ? "Yes, this person won a Nobel Prize." : "No, this person did not win a Nobel Prize.");
+            }
+            // Era/Century
+            if (q.includes("century") || q.includes("era") || q.includes("time period") || q.match(/\b\d{1,2}(st|nd|rd|th) century\b/)) {
+                return formatAnswer(`This person was active in the ${answer.era}.`);
+            }
+            // Gender (strict yes/no)
+            if (q.includes("female")) {
+                return "Yes".repeat(answer.gender === "female") + "No".repeat(answer.gender !== "female");
+            }
+            if (q.includes("male")) {
+                return "Yes".repeat(answer.gender === "male") + "No".repeat(answer.gender !== "male");
+            }
+            // Nationality (India-specific)
+            if (q.includes("india") || q.includes("indian")) {
+                return formatAnswer("Yes, this person is from India.");
+            }
+            // Fallback for unrelated questions
+            return formatAnswer("I can't answer that directly. Please ask a yes/no question.");
+        }
+
+        // Show loading spinner
+        function showLoading() {
+            if (gameState.loading) return;
+            gameState.loading = true;
+            const spinner = document.createElement('div');
+            spinner.className = 'msg-ai';
+            spinner.id = 'ai-loading';
+            spinner.innerHTML = '<span class="spinner"></span> Thinking...';
+            elements.questionLog.appendChild(spinner);
+            elements.questionLog.scrollTop = elements.questionLog.scrollHeight;
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            gameState.loading = false;
+            const spinner = document.getElementById('ai-loading');
+            if (spinner) spinner.remove();
+        }
+
+        // Handle correct guess
+        function handleCorrectGuess() {
+            addMessage('ai', formatAnswer(`Correct! The answer was ${gameState.answer.name}.`));
+            createConfetti();
+            endGame(true);
+        }
+
+        // End game
+        function endGame(won) {
+            gameState.gameOver = true;
+            elements.questionInput.disabled = true;
+            elements.submitBtn.disabled = true;
+            elements.guessBtn.disabled = true;
+            elements.resultText.innerHTML = won
+                ? `<div style='font-size:1.2rem;color:#1cb3c8;'>🎉 You Win! Collect your chocolate!</div>`
+                : `<div style='font-size:1.1rem;color:#e53e3e;'>Game Over! The answer was ${gameState.answer.name}.</div>`;
+            elements.resultArea.style.display = 'flex';
+        }
+
+        // --- Event Listeners ---
         function setupEventListeners() {
             elements.submitBtn.addEventListener('click', handleQuestion);
             elements.guessBtn.addEventListener('click', handleGuess);
             elements.playAgainBtn.addEventListener('click', initGame);
-            
             elements.questionInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    handleQuestion();
-                }
+                if (e.key === 'Enter') handleQuestion();
             });
         }
 
-        // Initialize on load
+        // --- Initialize Game on Page Load ---
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             initGame();

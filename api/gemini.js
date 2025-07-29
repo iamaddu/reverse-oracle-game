@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { question, answer, type, gender } = req.body;
+    const { question, answer } = req.body;
     
     // Validate input
     if (!question || typeof question !== 'string' || question.length > 200) {
@@ -84,129 +84,75 @@ module.exports = async (req, res) => {
     const q = question.toLowerCase().trim();
     const normalizedQ = normalizeString(q);
 
-    // 1. First check for direct name guesses (hidden in questions)
+    // 1. Direct name guess (hidden in question)
     if (normalizedQ.includes(normalizeString(chosen.name))) {
-      return res.status(200).json({ answer: 'Yes, that is correct!' });
+      return res.status(200).json({ answer: 'Yes.' });
     }
 
-    // 2. Handle all yes/no question types systematically
-    if (isYesNoQuestion(q)) {
-      // Type questions
-      const typeSynonyms = {
-        scientist: ["scientist", "science", "researcher"],
-        historical: ["historical", "history", "historian", "leader"]
-      };
-      
-      for (const [typeKey, synonyms] of Object.entries(typeSynonyms)) {
-        if (synonyms.some(word => normalizedQ.includes(word))) {
-          return res.status(200).json({ 
-            answer: chosen.type === typeKey ? 'Yes.' : 'No.' 
-          });
-        }
-      }
+    // Strict yes/no logic for all supported question types
+    // Gender
+    if (["female", "woman", "girl", "lady"].some(word => normalizedQ.includes(word))) {
+      return res.status(200).json({ answer: chosen.gender === "female" ? "Yes." : "No." });
+    }
+    if (["male", "man", "boy", "gentleman"].some(word => normalizedQ.includes(word))) {
+      return res.status(200).json({ answer: chosen.gender === "male" ? "Yes." : "No." });
+    }
 
-      // Gender questions
-      const genderSynonyms = {
-        female: ["female", "woman", "girl", "lady"],
-        male: ["male", "man", "boy", "gentleman"]
-      };
-      
-      for (const [genderKey, synonyms] of Object.entries(genderSynonyms)) {
-        if (synonyms.some(word => normalizedQ.includes(word))) {
-          return res.status(200).json({ 
-            answer: chosen.gender === genderKey ? 'Yes.' : 'No.' 
-          });
-        }
-      }
+    // Life status
+    if (["alive", "living", "currentlyalive", "stillalive"].some(word => normalizedQ.includes(word))) {
+      return res.status(200).json({ answer: chosen.isDead ? "No." : "Yes." });
+    }
+    if (["dead", "die", "passedaway", "deceased", "notalive", "notliving", "died", "death"].some(word => normalizedQ.includes(word))) {
+      return res.status(200).json({ answer: chosen.isDead ? "Yes." : "No." });
+    }
 
-      // Field of work questions
-      const fieldSynonyms = getFieldSynonyms(chosen.field);
-      if (fieldSynonyms.some(syn => normalizedQ.includes(syn))) {
-        return res.status(200).json({ answer: 'Yes.' });
-      }
-
-      // Nobel Prize questions
-      const nobelPatterns = ['nobel', 'noble', 'prize', 'laureate', 'award'];
-      if (nobelPatterns.some(word => normalizedQ.includes(word)) && 
-          normalizedQ.includes('win') || normalizedQ.includes('won')) {
-        return res.status(200).json({ 
-          answer: chosen.nobel ? 'Yes.' : 'No.' 
-        });
-      }
-
-      // Alive/dead questions
-      const lifeStatusWords = ['alive', 'dead', 'died', 'living', 'pass away', 'deceased'];
-      if (lifeStatusWords.some(word => normalizedQ.includes(word))) {
-        return res.status(200).json({ 
-          answer: chosen.isDead ? 'No, deceased.' : 'Yes, still alive.' 
-        });
-      }
-
-      // Date of birth questions
-      if ((normalizedQ.includes('born') || normalizedQ.includes('birth')) && 
-          chosen.dateOfBirth) {
-        if (normalizedQ.includes(normalizeString(chosen.dateOfBirth))) {
-          return res.status(200).json({ answer: 'Yes.' });
-        }
-        return res.status(200).json({ 
-          answer: `No, born on ${chosen.dateOfBirth}.` 
-        });
-      }
-
-      // Date of death questions
-      if ((normalizedQ.includes('die') || normalizedQ.includes('death')) && 
-          chosen.dateOfDeath) {
-        if (normalizedQ.includes(normalizeString(chosen.dateOfDeath))) {
-          return res.status(200).json({ answer: 'Yes.' });
-        }
-        return res.status(200).json({ 
-          answer: `No, died on ${chosen.dateOfDeath}.` 
-        });
-      }
-
-      // Family questions
-      const familyMap = {
-        father: chosen.fatherName,
-        mother: chosen.motherName,
-        spouse: chosen.spouse,
-        children: chosen.children ? chosen.children.join(', ') : null
-      };
-      
-      for (const [relation, value] of Object.entries(familyMap)) {
-        if (normalizedQ.includes(relation) && value) {
-          if (normalizedQ.includes(normalizeString(value))) {
-            return res.status(200).json({ answer: 'Yes.' });
-          }
-          return res.status(200).json({ 
-            answer: `No. ${relation.charAt(0).toUpperCase() + relation.slice(1)}: ${value}` 
-          });
-        }
-      }
-
-      // Education questions
-      if ((normalizedQ.includes('educat') || normalizedQ.includes('school') || 
-           normalizedQ.includes('college') || normalizedQ.includes('university')) && 
-          chosen.education) {
-        const eduMatch = chosen.education.some(edu => 
-          normalizedQ.includes(normalizeString(edu))
-        );
-        return res.status(200).json({ 
-          answer: eduMatch ? 'Yes.' : `No. Education: ${chosen.education.join(', ')}` 
-        });
-      }
-
-      // Achievement questions
-      if ((normalizedQ.includes('achiev') || normalizedQ.includes('famous') || 
-           normalizedQ.includes('known') || normalizedQ.includes('contribut')) && 
-          chosen.achievements) {
-        const achievementMatch = chosen.achievements.some(ach => 
-          normalizedQ.includes(normalizeString(ach))
-        );
-        return res.status(200).json({ 
-          answer: achievementMatch ? 'Yes.' : `No. Achievements: ${chosen.achievements.join(', ')}` 
-        });
+    // Field
+    const fieldMap = {
+      physics: ["physics", "physicist"],
+      chemistry: ["chemistry", "chemist"],
+      mathematics: ["mathematics", "math", "mathematician"],
+      politics: ["politics", "politician", "leader", "prime minister", "president"],
+      literature: ["literature", "writer", "poet"],
+      royalty: ["royalty", "king", "queen", "maharaj", "sultan"],
+      spirituality: ["spiritual", "spirituality", "monk", "swami"],
+      space: ["space", "astronaut", "rocket", "aerospace"],
+      astrophysics: ["astrophysics", "astrophysicist"],
+      revolutionary: ["revolutionary"]
+    };
+    for (const [field, synonyms] of Object.entries(fieldMap)) {
+      if (synonyms.some(word => normalizedQ.includes(word))) {
+        return res.status(200).json({ answer: chosen.field === field ? "Yes." : "No." });
       }
     }
+
+    // Nobel Prize
+    if (normalizedQ.includes("nobel") || normalizedQ.includes("prize")) {
+      return res.status(200).json({ answer: chosen.nobel ? "Yes." : "No." });
+    }
+
+    // Country (India)
+    if (normalizedQ.includes("india") || normalizedQ.includes("indian")) {
+      return res.status(200).json({ answer: "Yes." });
+    }
+
+    // Century or era
+    if (normalizedQ.includes("century") || normalizedQ.includes("era") || normalizedQ.includes("timeperiod")) {
+      if (chosen.era && normalizedQ.includes(normalizeString(chosen.era))) {
+        return res.status(200).json({ answer: "Yes." });
+      }
+      return res.status(200).json({ answer: "No." });
+    }
+
+    // Scientist/Historical figure
+    if (normalizedQ.includes("scientist") || normalizedQ.includes("science")) {
+      return res.status(200).json({ answer: chosen.type === "scientist" ? "Yes." : "No." });
+    }
+    if (normalizedQ.includes("historical") || normalizedQ.includes("history")) {
+      return res.status(200).json({ answer: chosen.type === "historical" ? "Yes." : "No." });
+    }
+
+    // Fallback for anything else
+    return res.status(200).json({ answer: "I can only answer yes or no questions." });
 
     // 3. For all other questions, use Gemini API with strict validation
     try {
@@ -215,19 +161,6 @@ module.exports = async (req, res) => {
 Question: ${question}
 
 Known facts:
-- Type: ${chosen.type}
-- Gender: ${chosen.gender}
-- Field: ${chosen.field}
-- Birthplace: ${chosen.birthplace}
-- Date of Birth: ${chosen.dateOfBirth || 'unknown'}
-- Date of Death: ${chosen.dateOfDeath || 'still alive'}
-- Nobel Prize: ${chosen.nobel ? 'Yes' : 'No'}
-- Achievements: ${chosen.achievements?.join(', ') || 'none listed'}
-- Education: ${chosen.education?.join(', ') || 'unknown'}
-- Father: ${chosen.fatherName || 'unknown'}
-- Mother: ${chosen.motherName || 'unknown'}
-- Spouse: ${chosen.spouse || 'unknown'}
-- Children: ${chosen.children?.join(', ') || 'unknown'}
 
 Provide a concise answer (preferably yes/no if appropriate). If unsure, say "I don't know".`;
 
